@@ -164,18 +164,26 @@ module control(
 
     // Next state logic aka our state table
     always@(*)
-    begin: state_table
-        case (current_state)
-        RESET: next_state = go ? RESET_WAIT : RESET;
-        RESET_WAIT: next_state = go ? RESET_WAIT : PLOT;
-        PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
-				RESET_COUNTER : next_state = COUNT;
-				COUNT: next_state = enable_erase ? ERASE : COUNT;
-        ERASE: next_state = done_plot ? UPDATE : ERASE;
-				UPDATE: next_state = PLOT;
-        default: next_state = RESET;
-        endcase
-    end // state_table
+		    begin: state_table
+		        case (current_state)
+
+						// RESET WHEN KEY[1] HAS BEEN PRESSED
+						RESET: next_state = go ? RESET_WAIT : RESET;
+		        RESET_WAIT: next_state = go ? RESET_WAIT : PLOT;
+
+						// LOOP FROM PLOT TO ERASE TO UPDATE TO PLOT
+
+						// PLOT A COLOURED BOX FIRST AND WAIT A BIT
+						// ... PLOT A BLACK BOX NOW AND THEN UPDATE
+		        PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
+						RESET_COUNTER : next_state = COUNT;
+						COUNT: next_state = enable_erase ? ERASE : COUNT;
+		        ERASE: next_state = done_plot ? UPDATE : ERASE;
+						UPDATE: next_state = PLOT;
+
+		        default: next_state = RESET;
+		        endcase
+		    end // state_table
 
 
     // Output logic aka all of our datapath control signals
@@ -217,9 +225,8 @@ module control(
 												ld_x = 1'b1;
 												ld_y = 1'b1;
 										end
-				        // default:    // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
 				        endcase
-	    end // enable_signals
+	    		end // enable_signals
 
     // current_state registers
     always@(posedge clk)
@@ -246,37 +253,37 @@ module datapath(
 
     reg [1:0] count_x, count_y;
 
-	wire enable_y;
+		wire enable_y;
 
-	always @(*)
-	begin
-	if (count_x == 2'b11 && count_y == 2'b11)
-		done_plot = 1'b1;
-	else
-		done_plot = 1'b0;
-	end
+		always @(*)
+		begin
+		if (count_x == 2'b11 && count_y == 2'b11)
+			done_plot = 1'b1;
+		else
+			done_plot = 1'b0;
+		end
 
-	// counter for x
-	always @(posedge clk) begin
-		if (!resetn)
-			count_x <= 2'b00;
-		else if (count_x_enable)
-			count_x <= count_x + 1'b1;
-	end
+		// counter for x
+		always @(posedge clk) begin
+			if (!resetn)
+				count_x <= 2'b00;
+			else if (count_x_enable)
+				count_x <= count_x + 1'b1;
+		end
 
-	assign enable_y = (count_x == 2'b11) ? 1 : 0;
+		assign enable_y = (count_x == 2'b11) ? 1 : 0;
 
-	// counter for y
-	always @(posedge clk) begin
-		if (!resetn)
-			count_y <= 2'b00;
-		else if (enable_y)
-			count_y <= count_y + 1'b1;
-	end
+		// counter for y
+		always @(posedge clk) begin
+			if (!resetn)
+				count_y <= 2'b00;
+			else if (enable_y)
+				count_y <= count_y + 1'b1;
+		end
 
-	assign x_out = x + count_x;
-	assign y_out = y + count_y;
-	assign colour_out = colour;
+		assign x_out = x + count_x;
+		assign y_out = y + count_y;
+		assign colour_out = colour;
 
 endmodule
 
