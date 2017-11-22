@@ -29,16 +29,16 @@ module part3
 	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
-	
+
 	wire resetn;
 	assign resetn = KEY[0];
-	
+
 	// Create the colour, x, y and writeEn wires that are inputs to the controller.
 	wire [2:0] colour;
 	wire [7:0] x;
 	wire [6:0] y;
 	wire writeEn;
-	
+
 	wire ld_x, ld_y;
 
 	wire [2:0] colour_load;
@@ -47,38 +47,38 @@ module part3
 
 	wire enable_frame, enable_erase, enable_counter, colour_erase_enable, count_x_enable;
 	wire done_plot;
-	
+
 	wire reset_counter, reset_load;
 
 	// Create an Instance of a VGA controller - there can be only one!
 	// Define the number of colours as well as the initial background
 	// image file (.MIF) for the controller.
-	vga_adapter VGA(
-			.resetn(resetn),
-			.clock(CLOCK_50),
-			.colour(colour),
-			.x(x),
-			.y(y),
-			.plot(writeEn),
-			/* Signals for the DAC to drive the monitor. */
-			.VGA_R(VGA_R),
-			.VGA_G(VGA_G),
-			.VGA_B(VGA_B),
-			.VGA_HS(VGA_HS),
-			.VGA_VS(VGA_VS),
-			.VGA_BLANK(VGA_BLANK_N),
-			.VGA_SYNC(VGA_SYNC_N),
-			.VGA_CLK(VGA_CLK));
+		vga_adapter VGA(
+				.resetn(resetn),
+				.clock(CLOCK_50),
+				.colour(colour),
+				.x(x),
+				.y(y),
+				.plot(writeEn),
+				/* Signals for the DAC to drive the monitor. */
+				.VGA_R(VGA_R),
+				.VGA_G(VGA_G),
+				.VGA_B(VGA_B),
+				.VGA_HS(VGA_HS),
+				.VGA_VS(VGA_VS),
+				.VGA_BLANK(VGA_BLANK_N),
+				.VGA_SYNC(VGA_SYNC_N),
+				.VGA_CLK(VGA_CLK));
 		defparam VGA.RESOLUTION = "160x120";
 		defparam VGA.MONOCHROME = "FALSE";
 		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 		defparam VGA.BACKGROUND_IMAGE = "black.mif";
-			
+
 	// Put your code here. Your code should produce signals x,y,colour and writeEn/plot
 	// for the VGA controller, in addition to any other functionality your design may require.
-    
+
     // Instansiate datapath
-	datapath d0(
+		datapath d0(
 				.clk(CLOCK_50),
 				.resetn(resetn),
 				.count_x_enable(count_x_enable),
@@ -106,116 +106,121 @@ module part3
 				.colour_erase_enable(colour_erase_enable),
 				.reset_load(reset_load),
 				.count_x_enable(count_x_enable)
-	);
+				);
 
-	load l0(
-		.clk(CLOCK_50),
-		.reset(reset_load),
-		.colour_in(SW[9:7]),
-		.colour_erase_enable(colour_erase_enable),
-		.ld_x(ld_x),
-		.ld_y(ld_y),
-		.x(x_load),
-		.y(y_load),
-		.colour(colour_load)
-	);
+		load l0(
+				.clk(CLOCK_50),
+				.reset(reset_load),
+				.colour_in(SW[9:7]),
+				.colour_erase_enable(colour_erase_enable),
+				.ld_x(ld_x),
+				.ld_y(ld_y),
+				.x(x_load),
+				.y(y_load),
+				.colour(colour_load)
+				);
 
-	delay_counter dc(
-			.enable(enable_counter),
-			.clk(CLOCK_50),
-			.resetn(reset_counter),
-			.enable_frame(enable_frame)
-	);
+		delay_counter dc(
+				.enable(enable_counter),
+				.clk(CLOCK_50),
+				.resetn(reset_counter),
+				.enable_frame(enable_frame)
+				);
 
-	frame_counter f0(
-			.enable(enable_frame),
-			.clk(CLOCK_50),
-			.resetn(reset_counter),
-			.enable_out(enable_erase)
-	);
-    
+		frame_counter f0(
+				.enable(enable_frame),
+				.clk(CLOCK_50),
+				.resetn(reset_counter),
+				.enable_out(enable_erase)
+				);
+
 endmodule
-
 
 module control(
     input clk,
     input resetn,
     input go,
-	input enable_erase,
-	input done_plot,
+		input enable_erase,
+		input done_plot,
 
     output reg  ld_x, ld_y,
-	output reg reset_counter, enable_counter,
-	output reg writeEn,
-	output reg colour_erase_enable,
-	output reg reset_load,
-	output reg count_x_enable
+		output reg reset_counter, enable_counter,
+		output reg writeEn,
+		output reg colour_erase_enable,
+		output reg reset_load,
+		output reg count_x_enable
     );
 
-    reg [2:0] current_state, next_state; 
-    
-    localparam  RESET = 4'd0,
+    reg [2:0] current_state, next_state;
+
+    localparam
+				RESET = 4'd0,
 				RESET_WAIT = 4'd1,
 				PLOT = 4'd2,
 				RESET_COUNTER = 4'd3,
 				COUNT = 4'd4,
 				ERASE = 4'd5,
 				UPDATE = 4'd6;
-    
+
     // Next state logic aka our state table
     always@(*)
-    begin: state_table 
-            case (current_state)
-                RESET: next_state = go ? RESET_WAIT : RESET; // Loop in current state until value is input
-                RESET_WAIT: next_state = go ? RESET_WAIT : PLOT; // Loop in current state until go signal goes low
-                PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
+    begin: state_table
+        case (current_state)
+        RESET: next_state = go ? RESET_WAIT : RESET;
+        RESET_WAIT: next_state = go ? RESET_WAIT : PLOT;
+        PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
 				RESET_COUNTER : next_state = COUNT;
-				COUNT: next_state = enable_erase ? ERASE : COUNT; 
-                ERASE: next_state = done_plot ? UPDATE : ERASE; 
+				COUNT: next_state = enable_erase ? ERASE : COUNT;
+        ERASE: next_state = done_plot ? UPDATE : ERASE;
 				UPDATE: next_state = PLOT;
-            default: next_state = RESET;
+        default: next_state = RESET;
         endcase
     end // state_table
-   
+
 
     // Output logic aka all of our datapath control signals
     always @(*)
-    begin: enable_signals
-        // By default make all our signals 0
-        ld_x = 1'b0;
-        ld_y = 1'b0;
-		writeEn = 1'b0;
-		reset_counter = 1'b1;
-		reset_load = 1'b1;
-		enable_counter = 1'b0;
-		colour_erase_enable = 1'b0;
-		count_x_enable = 1'b0;
+    		begin: enable_signals
+		        // By default make all our signals 0
+		        ld_x = 1'b0;
+		        ld_y = 1'b0;
+						writeEn = 1'b0;
+						reset_counter = 1'b1;
+						reset_load = 1'b1;
+						enable_counter = 1'b0;
+						colour_erase_enable = 1'b0;
+						count_x_enable = 1'b0;
 
-        case (current_state)
-            RESET: begin 
-				reset_counter = 1'b0;
-				reset_load = 1'b0;
-			end
-			PLOT: begin
-				count_x_enable = 1'b1;
-				writeEn = 1'b1;
-			end
-			RESET_COUNTER: 
-				reset_counter = 1'b0;
-			COUNT: enable_counter = 1'b1;
-			ERASE: begin
-				colour_erase_enable = 1'b1;
-				count_x_enable = 1'b1;
-				writeEn = 1'b1;
-			end
-			UPDATE: begin
-				ld_x = 1'b1;
-				ld_y = 1'b1;
-			end
-        // default:    // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
-        endcase
-    end // enable_signals
-   
+		        case (current_state)
+				        RESET:
+										begin
+												reset_counter = 1'b0;
+												reset_load = 1'b0;
+										end
+								PLOT:
+										begin
+												count_x_enable = 1'b1;
+												writeEn = 1'b1;
+										end
+								RESET_COUNTER:
+										reset_counter = 1'b0;
+								COUNT:
+										enable_counter = 1'b1;
+								ERASE:
+										begin
+												colour_erase_enable = 1'b1;
+												count_x_enable = 1'b1;
+												writeEn = 1'b1;
+										end
+								UPDATE:
+										begin
+												ld_x = 1'b1;
+												ld_y = 1'b1;
+										end
+				        // default:    // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
+				        endcase
+	    end // enable_signals
+
     // current_state registers
     always@(posedge clk)
     begin: state_FFs
@@ -229,20 +234,20 @@ endmodule
 module datapath(
     input clk,
     input resetn,
-	input count_x_enable,
+		input count_x_enable,
     input [7:0] x,
     input [6:0] y,
     input [2:0] colour,
     output [7:0] x_out,
-	output [6:0] y_out,
+		output [6:0] y_out,
     output [2:0] colour_out,
-	output reg done_plot
+		output reg done_plot
     );
 
     reg [1:0] count_x, count_y;
 
 	wire enable_y;
-	
+
 	always @(*)
 	begin
 	if (count_x == 2'b11 && count_y == 2'b11)
@@ -250,17 +255,17 @@ module datapath(
 	else
 		done_plot = 1'b0;
 	end
-	
+
 	// counter for x
 	always @(posedge clk) begin
-		if (!resetn) 
+		if (!resetn)
 			count_x <= 2'b00;
 		else if (count_x_enable)
 			count_x <= count_x + 1'b1;
-	end	
-	
+	end
+
 	assign enable_y = (count_x == 2'b11) ? 1 : 0;
-	
+
 	// counter for y
 	always @(posedge clk) begin
 		if (!resetn)
@@ -272,16 +277,16 @@ module datapath(
 	assign x_out = x + count_x;
 	assign y_out = y + count_y;
 	assign colour_out = colour;
-    
+
 endmodule
 
 module delay_counter(enable, clk, resetn, enable_frame);
 	  input enable, clk, resetn;
       output enable_frame;
 	  reg [22:0] counter;
-	  
+
 	  assign enable_frame = (counter == 0) ? 1 : 0;
-	  
+
 	  always @(posedge clk)
 	  begin
 	       if (!resetn)
@@ -299,17 +304,17 @@ endmodule
 module frame_counter(enable, clk, resetn, enable_out);
 	input enable, clk, resetn;
 	output enable_out;
-	
+
 	reg [3:0] frames;
-	
+
 	assign enable_out= (frames == 4'b1111) ? 1 : 0;
-	
+
 	always @ (posedge clk)
-	begin	
+	begin
 		if (!resetn)
 			frames <= 0;
 		else if (enable == 1'b1)
-		begin 
+		begin
 			if (frames == 4'b1111)
 				frames <= 0;
 			else
@@ -319,20 +324,20 @@ module frame_counter(enable, clk, resetn, enable_out);
 endmodule
 
 module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y,  x, y, colour);
-	input clk, reset; 
+	input clk, reset;
 	input [2:0] colour_in;
 	input colour_erase_enable;
 	input ld_x, ld_y;
 	output reg [7:0] x;
 	output reg [6:0] y;
 	output reg [2:0] colour;
-	                                                                               
+
 	reg vertical, horizontal;
-	
+
 	always @ (posedge clk) begin
         if (!reset) begin
-            x <= 8'd0; 
-            y <= 60; 
+            x <= 8'd0;
+            y <= 60;
 			vertical <= 1'b1; // up
 			horizontal <= 1'b1; // right
         end
@@ -343,15 +348,15 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y,  x, y, colou
 						horizontal <= 1'b0;
 						x <= x - 1;
 					end
-					else 
+					else
 						x <= x + 1;
-				end	
+				end
 				else begin
 					if (x == 0) begin
 						horizontal <= 1'b1;
 						x <= x + 1;
 					end
-					else 
+					else
 						x <= x - 1;
 				end
 			end
@@ -374,7 +379,7 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y,  x, y, colou
 				end
          end
     end
-	
+
 	always @(*)
 	begin
 	if (colour_erase_enable)
@@ -429,7 +434,7 @@ module combined(clk, resetn, go, colour_in, x, y, colour);
 				.colour_erase_enable(colour_erase_enable),
 				.reset_load(reset_load),
 				.count_x_enable(count_x_enable)
-	);
+		);
 
 	load l0(
 		.clk(clk),
@@ -461,10 +466,10 @@ endmodule
 module delay_frame(clk, reset, enable, enable_out);
 	input clk, reset, enable;
 	output enable_out;
-	
+
 	wire enable_frame;
-	
+
 	delay_counter d1(enable, clk, reset, enable_frame);
-	
+
 	frame_counter f1(enable_frame, clk, reset, enable_out);
 endmodule
