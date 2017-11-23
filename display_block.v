@@ -96,8 +96,8 @@ module display_block
 				.y_out(y),
 				.colour_out(colour),
 				.done_plot(done_plot),
-				.out_block_start(block_start),
-				.out_block_end(block_end)
+				.out_block_start(curr_block_start),
+				.out_block_end(curr_block_end)
 				);
 	
 	// STOP WIRE IS UPDATED BY MODULE CHECK_STOP_BUTTON
@@ -158,13 +158,26 @@ module display_block
 	
 	// wire for speed and num_blocks
 	reg [3:0] speed;
+	reg [3:0] prev_num_blocks;
 	reg [3:0] num_blocks;
 	vertical_modifier v0(
 			.clk(CLOCK_50),
 			.resetn(resetn),
 			.next_signal(level_up),
 			.speed(speed),
-			.num_blocks(num_blocks)
+			.num_blocks(num_blocks),
+			);
+	
+	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED
+	block_tracker bt(
+			.resetn(resetn),
+			.stop_true(stop),
+			.prev_block_start(prev_block_start),
+			.prev_block_end(prev_block_end),
+			.curr_block_start(curr_block_start),
+			.curr_block_end(curr_block_end),
+			.prev_block_size(prev_num_blocks),
+			.curr_block_size(num_blocks)
 			);
 	
 	reg [8:0] prev_block_start;
@@ -175,13 +188,13 @@ module display_block
 	// This module outputs the next_signal for the vertical modifier
 	// when the player has pressed the stop button
 	find_intersection fi(
-			.clk(CLOCK_50),
 			.resetn(resetn),
 			.stop_true(stop),
 			.prev_block_start(prev_block_start),
 			.prev_block_end(prev_block_end),
 			.curr_block_start(curr_block_start),
 			.curr_block_end(curr_block_end),
+			.prev_block_size(prev_num_blocks),
 			.curr_block_size(num_blocks),
 			.intersect_true(level_up)
 			);
