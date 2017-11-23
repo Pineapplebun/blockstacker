@@ -3,8 +3,9 @@ module control(
 		input resetn,
 		input enable_erase,
 		input done_plot,
+		input stop,
 		output reg reset_counter, enable_counter,
-		output reg ld_x, ld_y, ld_colour,
+		output reg ld_x, ld_y,
 		output reg writeEn,
 		output reg colour_erase_enable,
 		output reg reset_load,
@@ -20,7 +21,8 @@ module control(
 				RESET_COUNTER = 4'd3,
 				COUNT = 4'd4,
 				ERASE = 4'd5,
-				UPDATE = 4'd6;
+				UPDATE = 4'd6,
+				CHECK = 4'd7;
 
 		// Next state logic aka our state table
     always@(*)
@@ -35,7 +37,9 @@ module control(
         PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
 				RESET_COUNTER : next_state = COUNT;
 				// DELAY ERASE USING COUNT
-				COUNT: next_state = enable_erase ? ERASE : COUNT;
+				COUNT: next_state = enable_erase ? CHECK : COUNT;
+				// STOP = 1'B1 IF A STOP BUTTON IS PRESSED
+				CHECK: next_state = stop ? UPDATE : ERASE;
         ERASE: next_state = done_plot ? UPDATE : ERASE;
 				UPDATE: next_state = PLOT;
 
@@ -48,14 +52,14 @@ module control(
     always @(*)
     begin: enable_signals
         // By default make all our signals 0
-				ld_x = 1'b0;
-				ld_y = 1'b0;
-				writeEn = 1'b0;
-				reset_counter = 1'b1;
-				reset_load = 1'b1;
-				enable_counter = 1'b0;
-				colour_erase_enable = 1'b0;
-				count_x_enable = 1'b0;
+			ld_x = 1'b0;
+			ld_y = 1'b0;
+			writeEn = 1'b0;
+			reset_counter = 1'b1;
+			reset_load = 1'b1;
+			enable_counter = 1'b0;
+			colour_erase_enable = 1'b0;
+			count_x_enable = 1'b0;
 
         case (current_state)
 						RESET:
@@ -65,6 +69,7 @@ module control(
 								end
 						PLOT:
 								begin
+										colour_erase_enable = 1'b0;
 										count_x_enable = 1'b1;
 										writeEn = 1'b1;
 								end

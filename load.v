@@ -26,27 +26,28 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, vertical, x,
 	        	if (ld_x)
 						begin
 						if (horizontal)
+								begin
+								if (x == 156)
 										begin
-										if (x == 156)
-												begin
-												horizontal <= 1'b0;
-												x <= x - 4;
-												end
-										else
-												x <= x + 4;
+										horizontal <= 1'b0;
+										x <= x - 4;
 										end
 								else
-										begin
-										if (x == 0)
-												begin
-												horizontal <= 1'b1;
-												x <= x + 4;
-												end
-										else
-												x <= x - 4;
-										end
+										x <= x + 4;
 								end
-	          if (ld_y) begin
+						else
+								begin
+								if (x == 0)
+										begin
+										horizontal <= 1'b1;
+										x <= x + 4;
+										end
+								else
+										x <= x - 4;
+								end
+						end
+	          if (ld_y) 
+					begin
 								// ONLY CHANGE Y IF LEVEL HAS COMPLETED
 	              if (vertical) begin
 								y <= y - 4;
