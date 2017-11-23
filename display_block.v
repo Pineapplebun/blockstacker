@@ -33,6 +33,7 @@ module display_block
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
 
 	// Create the colour, x, y and writeEn wires that are inputs to the controller.
+	wire [2:0] colour_load;
 	wire [2:0] colour;
 	wire [7:0] x;
 	wire [6:0] y;
@@ -97,7 +98,7 @@ module display_block
 				.colour(colour_load),
 				.x_out(x),
 				.y_out(y),
-				.colour_out(colour)
+				.colour_out(colour),
 				.done_plot(done_plot)
 				);
 
@@ -118,7 +119,7 @@ module display_block
 			);
 
 	// HARD SET THE COLOUR
-	wire [2:0] block_colour = 3'b111
+	wire [2:0] block_colour = 3'b111;
 
 	// MODIFIES THE X,Y COORDINATES
 	load l0(
@@ -153,17 +154,17 @@ module display_block
 endmodule
 
 module control(
-    input clk,
-    input resetn,
+		input clk,
+		input resetn,
 		input enable_erase,
 		input done_plot,
-
-    output reg ld_x, ld_y, ld_colour,
+		output reg reset_counter, enable_counter,
+		output reg ld_x, ld_y, ld_colour,
 		output reg writeEn,
 		output reg colour_erase_enable,
 		output reg reset_load,
 		output reg count_x_enable
-    );
+		);
 
     reg [2:0] current_state, next_state;
 
@@ -181,9 +182,9 @@ module control(
     begin: state_table
         case (current_state)
 
-				// RESET WHEN KEY[1] HAS BEEN PRESSED
-        RESET: next_state = go ? RESET_WAIT : RESET;
-        RESET_WAIT: next_state = go ? RESET_WAIT : PLOT;
+				// RESET WHEN KEY[0] HAS BEEN PRESSED
+        RESET: next_state = !resetn? RESET_WAIT : RESET;
+        RESET_WAIT: next_state = !resetn ? RESET_WAIT : PLOT;
 
 				// LOOP FROM PLOT TO ERASE TO UPDATE TO PLOT
         PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
@@ -247,7 +248,7 @@ module control(
     always@(posedge clk)
     begin: state_FFs
         if(!resetn)
-            current_state <= S_LOAD_X;
+            current_state <= RESET;
         else
             current_state <= next_state;
     end // state_FFS
@@ -303,27 +304,28 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, vertical, x,
 		input clk, reset;
 		input [2:0] colour_in;
 		input colour_erase_enable;
-		input ld_x, ld_y, vertical;
+		input ld_x, ld_y;
 		output reg [7:0] x;
 		output reg [6:0] y;
 		output reg [2:0] colour;
 
-		reg horizontal;
+		reg horizontal; 
+		output reg vertical;
 
 		always @ (posedge clk)
-				begin
+			begin
 	      if (!reset)
-						begin
-			        	x <= 8'd0;
-			        	y <= 115;
-								vertical <= 1'b0; // down
-								horizontal <= 1'b1; // right
+				begin
+				x <= 8'd0;
+				y <= 115;
+				vertical <= 1'b0; // vertical OFF
+				horizontal <= 1'b1; // right
 	        	end
 	      else
-						begin
+				begin
 	        	if (ld_x)
-								begin
-								if (horizontal)
+						begin
+						if (horizontal)
 										begin
 										if (x == 156)
 												begin
@@ -333,25 +335,26 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, vertical, x,
 										else
 												x <= x + 4;
 										end
-								else
+						else
+								begin
+								if (x == 0)
 										begin
-										if (x == 0)
-												begin
-												horizontal <= 1'b1;
-												x <= x + 4;
-												end
-										else
-												x <= x - 4;
+										horizontal <= 1'b1;
+										x <= x + 4;
 										end
+								else
+										x <= x - 4;
 								end
+						end
 	          if (ld_y) begin
 								// ONLY CHANGE Y IF LEVEL HAS COMPLETED
 	              if (vertical) begin
-										y <= y - 4;
-										vertical <= 1'b0
+								y <= y - 4;
+								vertical <= 1'b0;
 								end
-	         	end
+					end
 	  		end
+		end
 
 		always @(*)
 				begin
@@ -365,8 +368,8 @@ endmodule
 module datapath(
     input clk,
     input resetn,
-		input count_x_enable,
-		input [7:0] x,
+	input count_x_enable,
+	input [7:0] x,
     input [6:0] y,
     input [2:0] colour,
     output [7:0] x_out,
@@ -374,11 +377,6 @@ module datapath(
     output [2:0] colour_out,
 		output reg done_plot
     );
-
-    // input registers
-    reg [7:0] x;
-		reg[6:0] y;
-		reg[2:0] colour;
 
     reg [1:0] count_x, count_y;
 
