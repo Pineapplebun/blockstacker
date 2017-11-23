@@ -1,27 +1,19 @@
 module vertical_modifier(
     input clk,
     input resetn,
-	input enable_erase,
-	input done_plot,
     input next_signal,
-
-    output reg ld_x, ld_y, ld_colour,
-		output reg writeEn,
-		output reg colour_erase_enable,
-		output reg reset_load,
-		output reg count_x_enable
     );
 
     reg [3:0] current_state, next_state;
 
     localparam
-				LEVEL1 = 4'd0,
-				LEVEL2 = 4'd1,
-				LEVEL3 = 4'd2,
-				LEVEL4 = 4'd3,
-				LEVEL5 = 4'd4,
-				LEVEL6 = 4'd5,
-				LEVEL7 = 4'd6;
+		LEVEL1 = 4'd0,
+		LEVEL2 = 4'd1,
+		LEVEL3 = 4'd2,
+		LEVEL4 = 4'd3,
+		LEVEL5 = 4'd4,
+		LEVEL6 = 4'd5,
+		LEVEL7 = 4'd6;
                 LEVEL8 = 4'd7;
                 LEVEL9 = 4'd8;
                 LEVEL10 = 4'd9;
@@ -57,14 +49,6 @@ module vertical_modifier(
     always @(*)
     begin: enable_signals
         // By default make all our signals 0
-				ld_x = 1'b0;
-				ld_y = 1'b0;
-				writeEn = 1'b0;
-				reset_counter = 1'b1;
-				reset_load = 1'b1;
-				enable_counter = 1'b0;
-				colour_erase_enable = 1'b0;
-				count_x_enable = 1'b0;
 
         case (current_state)
         LEVEL1: //
