@@ -1,17 +1,19 @@
 module datapath(
-    input clk,
-    input resetn,
-	input count_x_enable,
-	input [7:0] x,
-    input [6:0] y,
-    input [2:0] colour,
-    output [7:0] x_out,
-    output [6:0] y_out,
-    output [2:0] colour_out,
-		output reg done_plot
-    );
+		input clk,
+		input resetn,
+		input count_x_enable,
+		input [7:0] x,
+		input [6:0] y,
+		input [2:0] colour,
+		output [7:0] x_out,
+		output [6:0] y_out,
+		output [2:0] colour_out,
+		output reg done_plot,
+		output reg out_block_start,
+		output reg out_block_end
+		);
 
-    reg [1:0] count_x, count_y;
+		reg [1:0] count_x, count_y;
 
 		wire enable_y;
 
@@ -40,6 +42,8 @@ module datapath(
 		begin
 		if (count_x == 2'b11 && count_y == 2'b11)
 			done_plot = 1'b1;
+			out_block_start = x;
+			out_block_end = x_out;
 		else
 			done_plot = 1'b0;
 		end

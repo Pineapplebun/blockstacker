@@ -95,12 +95,17 @@ module display_block
 				.x_out(x),
 				.y_out(y),
 				.colour_out(colour),
-				.done_plot(done_plot)
+				.done_plot(done_plot),
+				.out_block_start(block_start),
+				.out_block_end(block_end)
 				);
 	
 	// STOP WIRE IS UPDATED BY MODULE CHECK_STOP_BUTTON
+	// ASSIGN STOP TO BE KEY[1] FOR NOW
 	wire stop;
-  // FSM CONTROL OF DRAWING
+	assign stop = KEY[1];
+	
+   // FSM CONTROL OF DRAWING
 	control c0(
 			.clk(CLOCK_50),
 			.resetn(resetn),
@@ -120,9 +125,8 @@ module display_block
 	// HARD SET THE COLOUR
 	wire [2:0] block_colour = 3'b111;
 	// DECLARE THE LEVEL UP WIRE
-	// THIS WIRE NEEDS TO BE MODIFIED BY ANOTHER FSM
 	wire vertical;
-	// MODIFIES THE X,Y COORDINATES
+	// LOAD MODIFIES THE X,Y COORDINATES
 	load l0(
 			.clk(CLOCK_50),
 			.reset(reset_load),
@@ -151,5 +155,36 @@ module display_block
 			.resetn(reset_counter),
 			.enable_out(enable_erase)
 			);
-
+	
+	// wire for speed and num_blocks
+	reg [3:0] speed;
+	reg [3:0] num_blocks;
+	vertical_modifier v0(
+			.clk(CLOCK_50),
+			.resetn(resetn),
+			.next_signal(level_up),
+			.speed(speed),
+			.num_blocks(num_blocks)
+			);
+	
+	reg [8:0] prev_block_start;
+	reg [8:0] prev_block_end;
+	reg [8:0] curr_block_start;
+	reg [8:0] curr_block_end;
+	wire level_up;
+	// This module outputs the next_signal for the vertical modifier
+	// when the player has pressed the stop button
+	find_intersection fi(
+			.clk(CLOCK_50),
+			.resetn(resetn),
+			.stop_true(stop),
+			.prev_block_start(prev_block_start),
+			.prev_block_end(prev_block_end),
+			.curr_block_start(curr_block_start),
+			.curr_block_end(curr_block_end),
+			.curr_block_size(num_blocks),
+			.intersect_true(level_up)
+			);
+			
+	
 endmodule
