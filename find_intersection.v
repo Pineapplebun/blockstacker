@@ -27,5 +27,10 @@ module find_intersection(
 				intersect_true = 1'b1;
 			end
 		end
+		
+		always @(posedge clk)
+		begin
+		if (!resetn)
+			intersect_true <= 0;
 
 endmodule

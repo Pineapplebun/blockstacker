@@ -124,8 +124,6 @@ module display_block
 
 	// HARD SET THE COLOUR
 	wire [2:0] block_colour = 3'b111;
-	// DECLARE THE LEVEL UP WIRE
-	wire vertical;
 	// LOAD MODIFIES THE X,Y COORDINATES
 	load l0(
 			.clk(CLOCK_50),
@@ -134,7 +132,7 @@ module display_block
 			.colour_erase_enable(colour_erase_enable),
 			.ld_x(ld_x),
 			.ld_y(ld_y),
-			.vertical(vertical),
+			.vertical(level_up),
 			.x(x_load),
 			.y(y_load),
 			.colour(colour_load)
@@ -170,6 +168,7 @@ module display_block
 	
 	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED
 	block_tracker bt(
+			.clk(CLOCK_50),
 			.resetn(resetn),
 			.stop_true(stop),
 			.prev_block_start(prev_block_start),
@@ -188,6 +187,7 @@ module display_block
 	// This module outputs the next_signal for the vertical modifier
 	// when the player has pressed the stop button
 	find_intersection fi(
+			.clk(CLOCK_50),
 			.resetn(resetn),
 			.stop_true(stop),
 			.prev_block_start(prev_block_start),

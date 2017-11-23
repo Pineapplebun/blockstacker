@@ -1,4 +1,5 @@
 module block_tracker(
+		input clk,
 		input resetn,
 		input stop_true,
 		output reg [8:0] prev_block_start,
@@ -17,6 +18,14 @@ module block_tracker(
 				prev_block_start = curr_block_start;
 				prev_block_end= curr_block_end;
 				prev_block_size= curr_block_size;
+			end
+		
+		always @(posedge clk)
+			begin
+			if (!resetn)
+				prev_block_start <= 0;
+				prev_block_end <= 0;
+				prev_block_size <= 0;
 			end
 
 endmodule
