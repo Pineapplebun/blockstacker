@@ -1,5 +1,7 @@
 module control(
+		output reg [9:0] LEDR, 
 		input clk,
+		input go,
 		input resetn,
 		input enable_erase,
 		input done_plot,
@@ -30,8 +32,8 @@ module control(
         case (current_state)
 
 				// RESET WHEN KEY[0] HAS BEEN PRESSED
-				RESET: next_state = !resetn? RESET_WAIT : RESET;
-				RESET_WAIT: next_state = !resetn ? RESET_WAIT : PLOT;
+				RESET: next_state = go ? RESET_WAIT : RESET;
+				RESET_WAIT: next_state = go ? RESET_WAIT : PLOT;
 
 				// LOOP FROM PLOT TO ERASE TO UPDATE TO PLOT
 				PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
@@ -60,28 +62,37 @@ module control(
 			enable_counter = 1'b0;
 			colour_erase_enable = 1'b0;
 			count_x_enable = 1'b0;
+			LEDR[9:0] = 10'd0;
 
         case (current_state)
 						RESET:
 								begin
 								reset_counter = 1'b0;
 								reset_load = 1'b0;
+								LEDR[0] = 1'b1;
 								end
 						PLOT:
 								begin
-								colour_erase_enable = 1'b0;
 								count_x_enable = 1'b1;
 								writeEn = 1'b1;
+								LEDR[1] = 1'b1;
 								end
 						RESET_COUNTER:
+								begin
 								reset_counter = 1'b0;
+								LEDR[2] = 1'b1;
+								end
 						COUNT:
+								begin
 								enable_counter = 1'b1;
+								LEDR[3] = 1'b1;
+								end
 						ERASE:
 								begin
 								colour_erase_enable = 1'b1;
 								count_x_enable = 1'b1;
 								writeEn = 1'b1;
+								LEDR[4] = 1'b1;
 								end
 						UPDATE:
 								begin
@@ -90,9 +101,11 @@ module control(
 								// X,Y GOING INTO DATAPATH
 								ld_x = 1'b1;
 								ld_y = 1'b1;
+								LEDR[5] = 1'b1;
 								end
 						CHECK:
 								begin
+								LEDR[6] = 1'b1;
 								end
 								
         endcase

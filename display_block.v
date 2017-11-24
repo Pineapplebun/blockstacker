@@ -6,6 +6,7 @@ module display_block
 		// Your inputs and outputs here
         KEY,
         SW,
+		  LEDR,
 		// The ports below are for the VGA output.  Do not change.
 		VGA_CLK,   						//	VGA Clock
 		VGA_HS,							//	VGA H_SYNC
@@ -20,6 +21,7 @@ module display_block
 	input			CLOCK_50;				//	50 MHz
 	input   [9:0]   SW;
 	input   [3:0]   KEY;
+	output   [9:0]   LEDR;
 
 	// Declare your inputs and outputs here
 	// Do not change the following outputs
@@ -102,16 +104,18 @@ module display_block
 	
 	// STOP WIRE IS UPDATED BY MODULE CHECK_STOP_BUTTON
 	// ASSIGN STOP TO BE KEY[1] FOR NOW
-	wire stop;
-	assign stop = KEY[1];
+	wire stop_true;
+	assign stop_true = KEY[2];
 	
    // FSM CONTROL OF DRAWING
 	control c0(
+			.LEDR(LEDR[9:0]),
 			.clk(CLOCK_50),
+			.go(~KEY[1]),
 			.resetn(resetn),
 			.enable_erase(enable_erase),
 			.done_plot(done_plot),
-			.stop(stop),
+			.stop_true(stop_true),
 			.ld_x(ld_x),
 			.ld_y(ld_y),
 			.reset_counter(reset_counter),
@@ -132,7 +136,7 @@ module display_block
 			.colour_erase_enable(colour_erase_enable),
 			.ld_x(ld_x),
 			.ld_y(ld_y),
-			.vertical(level_up),
+			.level_up_true(level_up_true),
 			.x(x_load),
 			.y(y_load),
 			.colour(colour_load)
@@ -155,22 +159,23 @@ module display_block
 			);
 	
 	// wire for speed and num_blocks
-	reg [3:0] speed;
-	reg [3:0] prev_num_blocks;
-	reg [3:0] num_blocks;
+	wire [3:0] speed;
+	wire [3:0] prev_num_blocks;
+	wire [3:0] num_blocks;
 	vertical_modifier v0(
 			.clk(CLOCK_50),
+			.go(~KEY[2]),
 			.resetn(resetn),
-			.next_signal(level_up),
+			.next_signal(level_up_true),
 			.speed(speed),
-			.num_blocks(num_blocks),
+			.num_blocks(num_blocks)
 			);
 	
 	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED
 	block_tracker bt(
 			.clk(CLOCK_50),
 			.resetn(resetn),
-			.stop_true(stop),
+			.stop_true(stop_true),
 			.prev_block_start(prev_block_start),
 			.prev_block_end(prev_block_end),
 			.curr_block_start(curr_block_start),
@@ -179,24 +184,24 @@ module display_block
 			.curr_block_size(num_blocks)
 			);
 	
-	reg [8:0] prev_block_start;
-	reg [8:0] prev_block_end;
-	reg [8:0] curr_block_start;
-	reg [8:0] curr_block_end;
-	wire level_up;
+	wire [8:0] prev_block_start;
+	wire [8:0] prev_block_end;
+	wire [8:0] curr_block_start;
+	wire [8:0] curr_block_end;
+	wire level_up_true;
 	// This module outputs the next_signal for the vertical modifier
 	// when the player has pressed the stop button
 	find_intersection fi(
 			.clk(CLOCK_50),
 			.resetn(resetn),
-			.stop_true(stop),
+			.stop_true(stop_true),
 			.prev_block_start(prev_block_start),
 			.prev_block_end(prev_block_end),
 			.curr_block_start(curr_block_start),
 			.curr_block_end(curr_block_end),
 			.prev_block_size(prev_num_blocks),
 			.curr_block_size(num_blocks),
-			.intersect_true(level_up)
+			.intersect_true(level_up_true)
 			);
 			
 	

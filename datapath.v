@@ -41,9 +41,11 @@ module datapath(
 		always @(*)
 		begin
 		if (count_x == 2'b11 && count_y == 2'b11)
+			begin
 			done_plot = 1'b1;
-			out_block_start = x;
-			out_block_end = x_out;
+			out_block_start <= x;
+			out_block_end <= x_out;
+			end
 		else
 			done_plot = 1'b0;
 		end

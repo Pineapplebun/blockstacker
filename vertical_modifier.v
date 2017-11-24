@@ -1,49 +1,94 @@
 module vertical_modifier(
     input clk,
+	 input go,
     input resetn,
     input next_signal,
 	 output reg speed,
 	 output reg num_blocks
     );
 
-    reg [3:0] current_state, next_state;
+    reg [4:0] current_state, next_state;
 
     localparam
-		LEVEL1 = 4'd0,
-		LEVEL2 = 4'd1,
-		LEVEL3 = 4'd2,
-		LEVEL4 = 4'd3,
-		LEVEL5 = 4'd4,
-		LEVEL6 = 4'd5,
-		LEVEL7 = 4'd6;
-		 LEVEL8 = 4'd7;
-		 LEVEL9 = 4'd8;
-		 LEVEL10 = 4'd9;
-		 LEVEL11 = 4'd10;
-		 LEVEL12 = 4'd11;
-		 LEVEL13 = 4'd12;
-		 LEVEL14 = 4'd13;
-		 LEVEL15 = 4'd14;
+	   LEVEL1_WAIT = 5'd0,
+		LEVEL1 = 5'd1,
+		LEVEL2_WAIT = 5'd2,
+		LEVEL2 = 5'd3,
+		LEVEL3_WAIT = 5'd4,
+		LEVEL3 = 5'd5,
+		LEVEL4_WAIT = 5'd6,
+		LEVEL4 = 5'd7,
+		LEVEL5_WAIT = 5'd8,
+		LEVEL5 = 5'd9,
+		LEVEL6_WAIT = 5'd10,
+		LEVEL6 = 5'd11,
+		LEVEL7_WAIT = 5'd12,
+		LEVEL7 = 5'd13,
+		LEVEL8_WAIT = 5'd14,
+		 LEVEL8 = 5'd15,
+		 LEVEL9_WAIT = 5'd16,
+		 LEVEL9 = 5'd17,
+		 LEVEL10_WAIT = 5'd18,
+		 LEVEL10 = 5'd19,
+		 LEVEL11_WAIT = 5'd20,
+		 LEVEL11 = 5'd21,
+		 LEVEL12_WAIT = 5'd22,
+		 LEVEL12 = 5'd23,
+		 LEVEL13_WAIT = 5'd24,
+		 LEVEL13 = 5'd25,
+		 LEVEL14_WAIT = 5'D26,
+		 LEVEL14 = 5'd27,
+		 LEVEL15_WAIT = 5'd28,
+		 LEVEL15 = 5'd29;
 
     always@(*)
     begin: level_table
         case (current_state)
-        LEVEL1: next_state = next_signal ? LEVEL2 : LEVEL1;
-        LEVEL2: next_state = next_signal ? LEVEL3 : LEVEL1;
-        LEVEL3: next_state = next_signal ? LEVEL4 : LEVEL1;
-        LEVEL4: next_state = next_signal ? LEVEL5 : LEVEL1;
-        LEVEL5: next_state = next_signal ? LEVEL6 : LEVEL1;
-        LEVEL6: next_state = next_signal ? LEVEL7 : LEVEL1;
-        LEVEL7: next_state = next_signal ? LEVEL8 : LEVEL1;
-        LEVEL8: next_state = next_signal ? LEVEL9 : LEVEL1;
-        LEVEL9: next_state = next_signal ? LEVEL10 : LEVEL1;
-        LEVEL10: next_state = next_signal ? LEVEL11 : LEVEL1;
-        LEVEL11: next_state = next_signal ? LEVEL12 : LEVEL1;
-        LEVEL12: next_state = next_signal ? LEVEL13 : LEVEL1;
-        LEVEL13: next_state = next_signal ? LEVEL14 : LEVEL1;
-        LEVEL14: next_state = next_signal ? LEVEL15 : LEVEL1;
-        LEVEL15: next_state = LEVEL1; //level15 is the max level. after that the game restarts
-        default: next_state = LEVEL1
+		  LEVEL1_WAIT: next_state = go ? LEVEL1 : LEVEL1_WAIT; 
+        LEVEL1: next_state = next_signal ? LEVEL2_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL2_WAIT: next_state = go ? LEVEL2 : LEVEL2_WAIT;
+        LEVEL2: next_state = next_signal ? LEVEL3_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL3_WAIT: next_state = go ? LEVEL4 : LEVEL3_WAIT;
+        LEVEL3: next_state = next_signal ? LEVEL4_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL4_WAIT: next_state = go ? LEVEL5 : LEVEL4_WAIT;
+        LEVEL4: next_state = next_signal ? LEVEL5_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL5_WAIT: next_state = go ? LEVEL6 : LEVEL5_WAIT;
+        LEVEL5: next_state = next_signal ? LEVEL6_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL6_WAIT: next_state = go ? LEVEL6 : LEVEL6_WAIT;
+        LEVEL6: next_state = next_signal ? LEVEL7_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL7_WAIT: next_state = go ? LEVEL7 : LEVEL7_WAIT;
+        LEVEL7: next_state = next_signal ? LEVEL8_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL8_WAIT: next_state = go ? LEVEL8 : LEVEL8_WAIT;
+        LEVEL8: next_state = next_signal ? LEVEL9_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL9_WAIT: next_state = go ? LEVEL9 : LEVEL9_WAIT;
+        LEVEL9: next_state = next_signal ? LEVEL10_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL10_WAIT: next_state = go ? LEVEL10 : LEVEL10_WAIT;
+        LEVEL10: next_state = next_signal ? LEVEL11_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL11_WAIT: next_state = go ? LEVEL11 : LEVEL11_WAIT;
+        LEVEL11: next_state = next_signal ? LEVEL12_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL12_WAIT: next_state = go ? LEVEL12 : LEVEL12_WAIT;
+        LEVEL12: next_state = next_signal ? LEVEL13_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL13_WAIT: next_state = go ? LEVEL13 : LEVEL13_WAIT;
+        LEVEL13: next_state = next_signal ? LEVEL14_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL14_WAIT: next_state = go ? LEVEL14 : LEVEL14_WAIT;
+        LEVEL14: next_state = next_signal ? LEVEL15_WAIT : LEVEL1_WAIT;
+		  
+		  LEVEL15_WAIT: next_state = go ? LEVEL15 : LEVEL15_WAIT;
+        LEVEL15: next_state = LEVEL1_WAIT;//level15 is the max level. after that the game restarts
+        default: next_state = LEVEL1_WAIT;
         endcase
     end // state_table
 
@@ -51,23 +96,24 @@ module vertical_modifier(
     always @(*)
     begin: enable_signals
         // By default make all our signals 1
-			speed = 1 num_blocks = 1
+			speed = 1;
+			num_blocks = 4'b0001;
         case (current_state)
-        LEVEL1: begin speed = 1 num_blocks = 1 //
-        LEVEL2: begin speed = 2 num_blocks = 1 //
-        LEVEL3: begin speed = 3 num_blocks = 1 //
-        LEVEL4: begin speed = 4 num_blocks = 1 //
-        LEVEL5: begin speed = 5 num_blocks = 1 //
-        LEVEL6: begin speed = 6 num_blocks = 1 //
-        LEVEL7: begin speed = 7 num_blocks = 1 //
-        LEVEL8: begin speed = 8 num_blocks = 1 //
-        LEVEL9: begin speed = 9 num_blocks = 1 //
-        LEVEL10: begin speed = 10 num_blocks = 1 //
-        LEVEL11: begin speed = 11 num_blocks = 1 //
-        LEVEL12: begin speed = 12 num_blocks = 1 //
-        LEVEL13: begin speed = 13 num_blocks = 1 //
-        LEVEL14: begin speed = 14 num_blocks = 1 //
-        LEVEL15: begin speed = 15 num_blocks = 1 //
+        LEVEL1: begin speed = 1; num_blocks = 4'b0001; end//
+        LEVEL2: begin speed = 2; num_blocks = 4'b0001; end//
+        LEVEL3: begin speed = 3; num_blocks = 4'b0001; end//
+        LEVEL4: begin speed = 4; num_blocks = 4'b0001; end//
+        LEVEL5: begin speed = 5; num_blocks = 4'b0001; end//
+        LEVEL6: begin speed = 6; num_blocks = 4'b0001; end//
+        LEVEL7: begin speed = 7; num_blocks = 4'b0001; end//
+        LEVEL8: begin speed = 8; num_blocks = 4'b0001; end//
+        LEVEL9: begin speed = 9; num_blocks = 4'b0001; end//
+        LEVEL10: begin speed = 10; num_blocks = 4'b0001; end//
+        LEVEL11: begin speed = 11; num_blocks = 4'b0001; end//
+        LEVEL12: begin speed = 12; num_blocks = 4'b0001; end//
+        LEVEL13: begin speed = 13; num_blocks = 4'b0001; end//
+        LEVEL14: begin speed = 14; num_blocks = 4'b0001; end//
+        LEVEL15: begin speed = 15; num_blocks = 4'b0001; end//
         endcase
     end // enable_signals
 
