@@ -1,5 +1,5 @@
 module control(
-		output reg [9:0] LEDR, 
+		output reg [9:0] LEDR,
 		input clk,
 		input go,
 		input resetn,
@@ -44,7 +44,7 @@ module control(
 				CHECK: next_state = stop_true ? UPDATE : ERASE;
 				ERASE: next_state = done_plot ? UPDATE : ERASE;
 				UPDATE: next_state = PLOT;
-				
+
 				default: next_state = RESET;
         endcase
     end // state_table
@@ -107,7 +107,7 @@ module control(
 								begin
 								LEDR[6] = 1'b1;
 								end
-								
+
         endcase
     end // enable_signals
 
@@ -120,4 +120,3 @@ module control(
             current_state <= next_state;
     end // state_FFS
 endmodule
-

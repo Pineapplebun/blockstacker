@@ -9,9 +9,9 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_tru
 		output reg [6:0] y;
 		output reg [2:0] colour;
 
-		reg horizontal; 
+		reg horizontal;
 		input level_up_true;
-		
+
 		always @ (posedge clk)
 			begin
 	      if (!reset)
@@ -44,23 +44,25 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_tru
 										x <= x - 4;
 								end
 						end
-				
+
 	  		end
 		end
-		y <= 116;
+
 		always @(*)
 				begin
 						if (colour_erase_enable)
 							colour = 3'b000;
 						else
 							colour = colour_in;
-						
-						if (ld_y)
+
+						if (!reset)
+							y = 7'd116;
+						else if (ld_y)
 							begin
 							if (level_up_true) begin
-									y <= y - 4;
+									y = y - 4;
 									end
 							end
-					
+
 				end
 endmodule

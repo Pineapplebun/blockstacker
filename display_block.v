@@ -75,7 +75,8 @@ module display_block
 	// DECLARE X,Y WIRES
 	wire [7:0] x_load;
 	wire [6:0] y_load;
-	wire ld_x, ld_y;	
+	assign y_load = 7'd116;
+	wire ld_x, ld_y;
 
 	// DECLARE WIRES FOR DRAW/ERASE
 	wire enable_frame, enable_erase, enable_counter, colour_erase_enable, count_x_enable;
@@ -101,12 +102,12 @@ module display_block
 				.out_block_start(curr_block_start),
 				.out_block_end(curr_block_end)
 				);
-	
+
 	// STOP WIRE IS UPDATED BY MODULE CHECK_STOP_BUTTON
 	// ASSIGN STOP TO BE KEY[1] FOR NOW
 	wire stop_true;
 	assign stop_true = KEY[2];
-	
+
    // FSM CONTROL OF DRAWING
 	control c0(
 			.LEDR(LEDR[9:0]),
@@ -130,7 +131,7 @@ module display_block
 	wire [2:0] block_colour = 3'b111;
 	// LOAD MODIFIES THE X,Y COORDINATES
 	load l0(
-			.clk(CLOCK_50),
+			.clk(enable_frame),
 			.reset(reset_load),
 			.colour_in(block_colour),
 			.colour_erase_enable(colour_erase_enable),
@@ -157,7 +158,7 @@ module display_block
 			.resetn(reset_counter),
 			.enable_out(enable_erase)
 			);
-	
+
 	// wire for speed and num_blocks
 	wire [3:0] speed;
 	wire [3:0] prev_num_blocks;
@@ -170,7 +171,7 @@ module display_block
 			.speed(speed),
 			.num_blocks(num_blocks)
 			);
-	
+
 	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED
 	block_tracker bt(
 			.clk(CLOCK_50),
@@ -183,7 +184,7 @@ module display_block
 			.prev_block_size(prev_num_blocks),
 			.curr_block_size(num_blocks)
 			);
-	
+
 	wire [8:0] prev_block_start;
 	wire [8:0] prev_block_end;
 	wire [8:0] curr_block_start;
@@ -203,6 +204,6 @@ module display_block
 			.curr_block_size(num_blocks),
 			.intersect_true(level_up_true)
 			);
-			
-	
+
+
 endmodule
