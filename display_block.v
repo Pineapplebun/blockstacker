@@ -137,7 +137,7 @@ module display_block
 			.colour_erase_enable(colour_erase_enable),
 			.ld_x(ld_x),
 			.ld_y(ld_y),
-			.level_up_true(level_up_true),
+			.curr_level(curr_level),
 			.x(x_load),
 			.y(y_load),
 			.colour(colour_load)
@@ -160,16 +160,19 @@ module display_block
 			);
 
 	// wire for speed and num_blocks
+	// OUTPUT LEVEL NUMBER
 	wire [3:0] speed;
 	wire [3:0] prev_num_blocks;
 	wire [3:0] num_blocks;
+	wire [5:0] curr_level;
 	vertical_modifier v0(
 			.clk(CLOCK_50),
 			.go(~KEY[2]),
 			.resetn(resetn),
 			.next_signal(level_up_true),
 			.speed(speed),
-			.num_blocks(num_blocks)
+			.num_blocks(num_blocks),
+			.curr_level(curr_level)
 			);
 
 	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED

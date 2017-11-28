@@ -11,26 +11,26 @@ module find_intersection(
 		output reg intersect_true
 		);
 
-		always @(posedge clk)
+		always @(*)
 		// defaults
-		
 		begin
 		if (stop_true)
 			begin
 			if (!resetn)
-				intersect_true <= 0;
+				intersect_true = 0;
 			else if (prev_block_start == 0 && prev_block_end == 0)
-				intersect_true <= 1'b1;
+				intersect_true = 1;
 			else
 				begin
 				if (curr_block_start >= prev_block_start && curr_block_start <= prev_block_end)
-					intersect_true <= 1'b1;
+					intersect_true = 1;
 				else
-					intersect_true <= 1'b0;
+					intersect_true = 0;
 				end
 			end
 		else
-			intersect_true <= 0;
+			intersect_true = 0;
 		end
+		
 
 endmodule
