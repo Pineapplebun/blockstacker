@@ -14,7 +14,7 @@ module block_tracker(
 		always @(*)
 		// defaults
 			begin
-			if (!resetn)
+			if (!resetn || (stop_true && ~intersect_true))
 				begin
 				prev_block_start = 0;
 				prev_block_end = 0;

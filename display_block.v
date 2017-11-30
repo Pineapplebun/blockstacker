@@ -130,6 +130,9 @@ module display_block
 	// HARD SET THE COLOUR
 	wire [2:0] block_colour = 3'b111;
 	// LOAD MODIFIES THE X,Y COORDINATES
+	// THE CLOCK IS THE FRAME RATE SINCE
+	// WE WANT TO LOAD/ERASE ONE SET OF
+	// POINTS AT EVERY FRAME
 	load l0(
 			.clk(enable_frame),
 			.reset(reset_load),
@@ -144,14 +147,24 @@ module display_block
 			);
 
 	// COUNTS HOW LONG TO WAIT BEFORE A FRAME
+	// SPEED CHANGES THIS DELAY
+	// ENABLE_FRAME IS OUTPUT 1 TIMES PER SECOND
+	// SO THAT THE BOX SEEMINGLY MOVES 1*4 = 4
+	// PIXELS PER SECOND (1 FRAMES DEDICATED TO 
+	// DRAW THE BOX WHITE AND 4 PIXELS MOVED AT
+	// A FRAME
 	delay_counter dc(
 			.enable(enable_counter),
 			.clk(CLOCK_50),
 			.resetn(reset_counter),
-			.enable_frame(enable_frame)
+			.enable_frame(enable_frame),
+			.speed_count(speed_count)
 			);
 
 	// COUNTS HOW MANY FRAMES BEFORE ERASING
+	// ENABLE_ERASE IS OUTPUT 1 TIMES PER 1 FRAMES
+	// WE NEED 1 ERASE/ 2 FRAMES: 1 FRAME TO DRAW
+	// A WHITE BOX, 1 FRAME TO ERASE A WHITE BOX
 	frame_counter f0(
 			.enable(enable_frame),
 			.clk(CLOCK_50),
@@ -160,8 +173,9 @@ module display_block
 			);
 
 	// wire for speed and num_blocks
-	// OUTPUT LEVEL NUMBER
-	wire [3:0] speed;
+	// OUTPUT LEVEL NUMBER TO LOAD MODULE
+	// VIA CURR_LEVEL WIRE
+	wire [31:0] speed_count;
 	wire [3:0] prev_num_blocks;
 	wire [3:0] num_blocks;
 	wire [5:0] curr_level;
@@ -170,7 +184,7 @@ module display_block
 			.go(~KEY[2]),
 			.resetn(resetn),
 			.next_signal(level_up_true),
-			.speed(speed),
+			.speed_count(speed_count),
 			.num_blocks(num_blocks),
 			.curr_level(curr_level)
 			);

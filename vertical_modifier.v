@@ -3,7 +3,7 @@ module vertical_modifier(
 	 input go,
     input resetn,
     input next_signal,
-	 output reg speed,
+	 output reg speed_count,
 	 output reg num_blocks,
 	 output reg curr_level
     );
@@ -97,25 +97,25 @@ module vertical_modifier(
     always @(*)
     begin: enable_signals
         // By default make all our signals 1
-			speed = 1;
+			speed_count = 50000000;
 			num_blocks = 4'b0001;
 			curr_level = 1;
         case (current_state)
-        LEVEL1_WAIT: begin speed = 1; num_blocks = 4'b0001; curr_level = 1;end//
-        LEVEL2_WAIT: begin speed = 2; num_blocks = 4'b0001; curr_level = 2;end//
-        LEVEL3_WAIT: begin speed = 3; num_blocks = 4'b0001; curr_level = 3;end//
-        LEVEL4_WAIT: begin speed = 4; num_blocks = 4'b0001; curr_level = 4;end//
-        LEVEL5_WAIT: begin speed = 5; num_blocks = 4'b0001; curr_level = 5;end//
-        LEVEL6_WAIT: begin speed = 6; num_blocks = 4'b0001; curr_level = 6;end//
-        LEVEL7_WAIT: begin speed = 7; num_blocks = 4'b0001; curr_level = 7;end//
-        LEVEL8_WAIT: begin speed = 8; num_blocks = 4'b0001; curr_level = 8;end//
-        LEVEL9_WAIT: begin speed = 9; num_blocks = 4'b0001; curr_level = 9;end//
-        LEVEL10_WAIT: begin speed = 10; num_blocks = 4'b0001; curr_level = 10;end//
-        LEVEL11_WAIT: begin speed = 11; num_blocks = 4'b0001; curr_level = 11;end//
-        LEVEL12_WAIT: begin speed = 12; num_blocks = 4'b0001; curr_level = 12;end//
-        LEVEL13_WAIT: begin speed = 13; num_blocks = 4'b0001; curr_level = 13;end//
-        LEVEL14_WAIT: begin speed = 14; num_blocks = 4'b0001; curr_level = 14;end//
-        LEVEL15_WAIT: begin speed = 15; num_blocks = 4'b0001; curr_level = 15;end//
+        LEVEL1_WAIT: begin speed_count = 50000000; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
+        LEVEL2_WAIT: begin speed_count = 25000000; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
+        LEVEL3_WAIT: begin speed_count = 3; num_blocks = 4'b0001; curr_level = 3;end//
+        LEVEL4_WAIT: begin speed_count = 4; num_blocks = 4'b0001; curr_level = 4;end//
+        LEVEL5_WAIT: begin speed_count = 5; num_blocks = 4'b0001; curr_level = 5;end//
+        LEVEL6_WAIT: begin speed_count = 6; num_blocks = 4'b0001; curr_level = 6;end//
+        LEVEL7_WAIT: begin speed_count = 7; num_blocks = 4'b0001; curr_level = 7;end//
+        LEVEL8_WAIT: begin speed_count = 8; num_blocks = 4'b0001; curr_level = 8;end//
+        LEVEL9_WAIT: begin speed_count = 9; num_blocks = 4'b0001; curr_level = 9;end//
+        LEVEL10_WAIT: begin speed_count = 10; num_blocks = 4'b0001; curr_level = 10;end//
+        LEVEL11_WAIT: begin speed_count = 11; num_blocks = 4'b0001; curr_level = 11;end//
+        LEVEL12_WAIT: begin speed_count = 12; num_blocks = 4'b0001; curr_level = 12;end//
+        LEVEL13_WAIT: begin speed_count = 13; num_blocks = 4'b0001; curr_level = 13;end//
+        LEVEL14_WAIT: begin speed_count = 14; num_blocks = 4'b0001; curr_level = 14;end//
+        LEVEL15_WAIT: begin speed_count = 15; num_blocks = 4'b0001; curr_level = 15;end//
         endcase
     end // enable_signals
 

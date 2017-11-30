@@ -21,7 +21,7 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_tru
 	        	end
 	      else
 				begin
-	        	if (ld_x)
+	        	if (ld_x && ~colour_erase_enable) // WE WANT IT TO NOT CHANGE X,Y WHEN COLOUR ERASE IS ON
 						begin
 						if (horizontal)
 								begin
@@ -44,11 +44,13 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_tru
 										x <= x - 4;
 								end
 						end
-				if (ld_y)
+				if (ld_y && ~colour_erase_enable)
 					y <= 7'd116 - 4*curr_level;
-	  		end
-		end
-
+					
+			end
+		
+		// ONLY NEED TO CHANGE COLOUR SINCE X,Y ALREADY IN RIGHT SPOT
+		// WHEN COLOUR_ERASE_ENABLE IS ON
 		always @(*)
 		begin
 				if (colour_erase_enable)
