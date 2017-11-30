@@ -54,9 +54,9 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_tru
 		
 		// ONLY NEED TO CHANGE COLOUR SINCE X,Y ALREADY IN RIGHT SPOT
 		// WHEN COLOUR_ERASE_ENABLE IS ON AT THE POSEDGE OF ENABLE_ERASE
-		always @(posedge clk) 
+		always @(*) 
 		begin
-				if (colour_erase_enable&& ~stop_true) // need to add ~stop_true this so that it doesn't erase the current position
+				if (colour_erase_enable) // need to add ~stop_true this so that it doesn't erase the current position
 					colour <= 3'b000;
 				else
 					colour <= colour_in;

@@ -101,8 +101,8 @@ module vertical_modifier(
 			num_blocks = 4'b0001;
 			curr_level = 1;
         case (current_state)
-        LEVEL1_WAIT: begin speed_count = 1; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
-        LEVEL2_WAIT: begin speed_count = 2; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
+        LEVEL1_WAIT: begin speed_count = 60; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
+        LEVEL2_WAIT: begin speed_count = 30; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
         LEVEL3_WAIT: begin speed_count = 3; num_blocks = 4'b0001; curr_level = 3;end//
         LEVEL4_WAIT: begin speed_count = 4; num_blocks = 4'b0001; curr_level = 4;end//
         LEVEL5_WAIT: begin speed_count = 5; num_blocks = 4'b0001; curr_level = 5;end//
@@ -116,6 +116,22 @@ module vertical_modifier(
         LEVEL13_WAIT: begin speed_count = 13; num_blocks = 4'b0001; curr_level = 13;end//
         LEVEL14_WAIT: begin speed_count = 14; num_blocks = 4'b0001; curr_level = 14;end//
         LEVEL15_WAIT: begin speed_count = 15; num_blocks = 4'b0001; curr_level = 15;end//
+		  
+		  LEVEL1: begin speed_count = 60; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
+        LEVEL2: begin speed_count = 30; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
+        LEVEL3 : begin speed_count = 3; num_blocks = 4'b0001; curr_level = 3;end//
+        LEVEL4 : begin speed_count = 4; num_blocks = 4'b0001; curr_level = 4;end//
+        LEVEL5 : begin speed_count = 5; num_blocks = 4'b0001; curr_level = 5;end//
+        LEVEL6 : begin speed_count = 6; num_blocks = 4'b0001; curr_level = 6;end//
+        LEVEL7 : begin speed_count = 7; num_blocks = 4'b0001; curr_level = 7;end//
+        LEVEL8 : begin speed_count = 8; num_blocks = 4'b0001; curr_level = 8;end//
+        LEVEL9 : begin speed_count = 9; num_blocks = 4'b0001; curr_level = 9;end//
+        LEVEL10 : begin speed_count = 10; num_blocks = 4'b0001; curr_level = 10;end//
+        LEVEL11 : begin speed_count = 11; num_blocks = 4'b0001; curr_level = 11;end//
+        LEVEL12 : begin speed_count = 12; num_blocks = 4'b0001; curr_level = 12;end//
+        LEVEL13 : begin speed_count = 13; num_blocks = 4'b0001; curr_level = 13;end//
+        LEVEL14 : begin speed_count = 14; num_blocks = 4'b0001; curr_level = 14;end//
+        LEVEL15 : begin speed_count = 15; num_blocks = 4'b0001; curr_level = 15;end//
         endcase
     end // enable_signals
 
@@ -123,7 +139,7 @@ module vertical_modifier(
     always@(posedge clk)
     begin: state_FFs
         if(!resetn)
-            current_state <= LEVEL1;
+            current_state <= LEVEL1_WAIT;
         else
             current_state <= next_state;
     end // state_FFS

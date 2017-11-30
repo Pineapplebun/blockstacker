@@ -208,7 +208,8 @@ module display_block
 			.curr_block_start(curr_block_start),
 			.curr_block_end(curr_block_end),
 			.prev_block_size(prev_num_blocks),
-			.curr_block_size(num_blocks)
+			.curr_block_size(num_blocks),
+			.intersect_true(level_up_true)
 			);
 
 	wire [8:0] prev_block_start;

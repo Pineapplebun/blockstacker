@@ -25,6 +25,7 @@ module control(
 				ERASE = 4'd5,
 				UPDATE = 4'd6,
 				CHECK = 4'd7;
+				CHECK_WAIT = 4'd8;
 
 		// Next state logic aka our state table
     always@(*)
@@ -41,13 +42,14 @@ module control(
 				// DELAY ERASE USING COUNT
 				// 1 erase per 2 sec on first level 
 				// -> 1 erase per 1 sec on second level
-				COUNT: next_state = enable_erase ? CHECK : COUNT;
+				COUNT: next_state = (stop_true || enable_erase) ? CHECK : COUNT;
 				// STOP = 1'B1 IF A STOP BUTTON IS PRESSED
 				
 				// EVEN WHEN ENABLE_ERASE IS 1 ALREADY, IF THE PERSON
-				// HAS PRESSED STOP, THENIT WILL NOT ERASE 
+				// HAS PRESSED STOP, THEN IT WILL NOT ERASE
+			   // IE. DO NOT SET WRITEEN TO BE 1 INSIDE CHECK	
 				CHECK: next_state = stop_true ? CHECK_WAIT : ERASE;
-				CHECK_WAIT: next_state = done_plot ? UPDATE : CHECK_WAIT
+				CHECK_WAIT: next_state = next_level ? UPDATE : CHECK_WAIT
 				ERASE: next_state = done_plot ? UPDATE : ERASE;
 				UPDATE: next_state = PLOT;
 
