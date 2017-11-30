@@ -8,29 +8,43 @@ module find_intersection(
 		input [8:0] curr_block_end,
 		input [3:0] prev_block_size,
 		input [3:0] curr_block_size,
-		output reg intersect_true
+		output reg intersect_true,
+        output reg [8:0] inter_block_start,
+        output reg [8:0] inter_block_end,
+        output reg [3:0] inter_block_size
+        
 		);
 
-		always @(*)
+		always @(posedge clk)
 		// defaults
+		
 		begin
 		if (stop_true)
 			begin
 			if (!resetn)
-				intersect_true = 0;
-			else if (prev_block_start == 0 && prev_block_end == 0)
-				intersect_true = 1;
+				intersect_true <= 0;
+			else if (curr_block_start == 0 && prev_block_end == 0)
+				intersect_true <= 1'b1;
 			else
 				begin
-				if (curr_block_start >= prev_block_start && curr_block_start <= prev_block_end)
-					intersect_true = 1;
+				if (curr_block_start <= prev_block_start && curr_block_start >= prev_block_end)
+                    begin
+					intersect_true <= 1'b1;
+                    inter_block_start <= curr_block_start;
+                    inter_block_end <= prev_block_end;
+                    end
+                else if (curr_block_end <= prev_block_start && curr_block_end >= prev_block_end)
+                    begin
+					intersect_true <= 1'b1;
+                    inter_block_start <= prev_block_start;
+                    inter_block_end <= curr_block_end;
+                    end
 				else
-					intersect_true = 0;
+					intersect_true <= 1'b0;
 				end
 			end
 		else
-			intersect_true = 0;
+			intersect_true <= 0;
 		end
-		
 
 endmodule

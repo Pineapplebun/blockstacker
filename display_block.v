@@ -77,7 +77,6 @@ module display_block
 	wire [6:0] y_load;
 	assign y_load = 7'd116;
 	wire ld_x, ld_y;
-
 	// DECLARE WIRES FOR DRAW/ERASE
 	wire enable_frame, enable_erase, enable_counter, colour_erase_enable, count_x_enable;
 	wire done_plot;
@@ -102,7 +101,7 @@ module display_block
 				.out_block_start(curr_block_start),
 				.out_block_end(curr_block_end)
 				);
-
+                
 	// STOP WIRE IS UPDATED BY MODULE CHECK_STOP_BUTTON
 	// ASSIGN STOP TO BE KEY[1] FOR NOW
 	wire stop_true;
@@ -137,7 +136,7 @@ module display_block
 			.colour_erase_enable(colour_erase_enable),
 			.ld_x(ld_x),
 			.ld_y(ld_y),
-			.curr_level(curr_level),
+			.level_up_true(level_up_true),
 			.x(x_load),
 			.y(y_load),
 			.colour(colour_load)
@@ -160,19 +159,17 @@ module display_block
 			);
 
 	// wire for speed and num_blocks
-	// OUTPUT LEVEL NUMBER
 	wire [3:0] speed;
 	wire [3:0] prev_num_blocks;
 	wire [3:0] num_blocks;
-	wire [5:0] curr_level;
+    wire [3:0] inter_num_blocks;
 	vertical_modifier v0(
 			.clk(CLOCK_50),
 			.go(~KEY[2]),
 			.resetn(resetn),
 			.next_signal(level_up_true),
 			.speed(speed),
-			.num_blocks(num_blocks),
-			.curr_level(curr_level)
+			.num_blocks(num_blocks)
 			);
 
 	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED
@@ -182,16 +179,19 @@ module display_block
 			.stop_true(stop_true),
 			.prev_block_start(prev_block_start),
 			.prev_block_end(prev_block_end),
-			.curr_block_start(curr_block_start),
-			.curr_block_end(curr_block_end),
+			.inter_block_start(inter_block_start),
+			.inter_block_end(inter_block_end),
 			.prev_block_size(prev_num_blocks),
-			.curr_block_size(num_blocks)
+			.inter_block_size(inter_num_blocks),
+            .interset_true(intersect_true)
 			);
 
 	wire [8:0] prev_block_start;
 	wire [8:0] prev_block_end;
 	wire [8:0] curr_block_start;
 	wire [8:0] curr_block_end;
+	wire [8:0] inter_block_start;
+	wire [8:0] inter_block_end;
 	wire level_up_true;
 	// This module outputs the next_signal for the vertical modifier
 	// when the player has pressed the stop button
@@ -206,6 +206,9 @@ module display_block
 			.prev_block_size(prev_num_blocks),
 			.curr_block_size(num_blocks),
 			.intersect_true(level_up_true)
+            .inter_block_start(inter_block_start),
+            .inter_block_end(inter_block_end),
+            .inter_block_size(inter_num_blocks)
 			);
 
 
