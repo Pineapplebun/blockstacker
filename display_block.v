@@ -168,8 +168,7 @@ module display_block
 			.go(~KEY[2]),
 			.resetn(resetn),
 			.next_signal(level_up_true),
-			.speed(speed),
-			.num_blocks(num_blocks)
+			.speed(speed)
 			);
 
 	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED
