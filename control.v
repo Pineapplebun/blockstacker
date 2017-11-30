@@ -39,9 +39,15 @@ module control(
 				PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
 				RESET_COUNTER : next_state = COUNT;
 				// DELAY ERASE USING COUNT
+				// 1 erase per 2 sec on first level 
+				// -> 1 erase per 1 sec on second level
 				COUNT: next_state = enable_erase ? CHECK : COUNT;
 				// STOP = 1'B1 IF A STOP BUTTON IS PRESSED
-				CHECK: next_state = stop_true ? UPDATE : ERASE;
+				
+				// EVEN WHEN ENABLE_ERASE IS 1 ALREADY, IF THE PERSON
+				// HAS PRESSED STOP, THENIT WILL NOT ERASE 
+				CHECK: next_state = stop_true ? CHECK_WAIT : ERASE;
+				CHECK_WAIT: next_state = done_plot ? UPDATE : CHECK_WAIT
 				ERASE: next_state = done_plot ? UPDATE : ERASE;
 				UPDATE: next_state = PLOT;
 
@@ -87,12 +93,22 @@ module control(
 								enable_counter = 1'b1;
 								LEDR[3] = 1'b1;
 								end
+						CHECK:
+								begin
+								// 
+								LEDR[4] = 1'b1;
+								end
+						CHECK_WAIT:
+								begin
+								// 
+								LEDR[5] = 1'b1;
+								end
 						ERASE:
 								begin
 								colour_erase_enable = 1'b1;
 								count_x_enable = 1'b1;
-								writeEn = 1'b1;
-								LEDR[4] = 1'b1;
+								writeEn = 1'b1; // this plots it immediately
+								LEDR[6] = 1'b1;
 								end
 						UPDATE:
 								begin
@@ -101,12 +117,9 @@ module control(
 								// X,Y GOING INTO DATAPATH
 								ld_x = 1'b1;
 								ld_y = 1'b1;
-								LEDR[5] = 1'b1;
+								LEDR[7] = 1'b1;
 								end
-						CHECK:
-								begin
-								LEDR[6] = 1'b1;
-								end
+						
 
         endcase
     end // enable_signals

@@ -130,11 +130,14 @@ module display_block
 	// HARD SET THE COLOUR
 	wire [2:0] block_colour = 3'b111;
 	// LOAD MODIFIES THE X,Y COORDINATES
-	// THE CLOCK IS THE FRAME RATE SINCE
-	// WE WANT TO LOAD/ERASE ONE SET OF
-	// POINTS AT EVERY FRAME
+	// THE CLOCK IS THE POINT WHEN ENABLE
+	// ERASE IS HIGH SINCE WE WANT TO MOVE
+	// THE X,Y COORDS AFTER AN ERASURE
+	// IE. IF ENABLE_ERASE OCCURS 1 PER 60 FRAMES
+	// DRAW A BLACK BOX AT CURRENT X,Y TO ERASE
+	// AND CHANGE X,Y TO BE SOMEWHERE ELSE
 	load l0(
-			.clk(enable_frame),
+			.clk(enable_erase),
 			.reset(reset_load),
 			.colour_in(block_colour),
 			.colour_erase_enable(colour_erase_enable),
@@ -148,34 +151,40 @@ module display_block
 
 	// COUNTS HOW LONG TO WAIT BEFORE A FRAME
 	// SPEED CHANGES THIS DELAY
-	// ENABLE_FRAME IS OUTPUT 1 TIMES PER SECOND
-	// SO THAT THE BOX SEEMINGLY MOVES 1*4 = 4
-	// PIXELS PER SECOND (1 FRAMES DEDICATED TO 
-	// DRAW THE BOX WHITE AND 4 PIXELS MOVED AT
-	// A FRAME
+	// ENABLE_FRAME IS OUTPUT 60 TIMES PER SECOND
+	// SO THAT WE HAVE 60 FPS
+	wire [31:0] fps_count = 833332; 
 	delay_counter dc(
 			.enable(enable_counter),
 			.clk(CLOCK_50),
 			.resetn(reset_counter),
 			.enable_frame(enable_frame),
-			.speed_count(speed_count)
+			.fps_count(fps_count)
 			);
 
 	// COUNTS HOW MANY FRAMES BEFORE ERASING
-	// ENABLE_ERASE IS OUTPUT 1 TIMES PER 1 FRAMES
-	// WE NEED 1 ERASE/ 2 FRAMES: 1 FRAME TO DRAW
+	// ENABLE_ERASE IS OUTPUT 60/SPEED_COUNT TIMES PER SECOND
+	// 
+	// LEVEL 1
+	// WE NEED 1 ERASE/60 FRAMES : 60 FRAMES TO DRAW
 	// A WHITE BOX, 1 FRAME TO ERASE A WHITE BOX
+	// SET SPEED_COUNT = 60
+	// 
+	// LEVEL 2
+	// 1 ERASE / 30 FRAMES
+	// SET SPEED_COUNT = 30
 	frame_counter f0(
 			.enable(enable_frame),
 			.clk(CLOCK_50),
 			.resetn(reset_counter),
-			.enable_out(enable_erase)
+			.enable_out(enable_erase),
+			.speed_count(speed_count)
 			);
 
 	// wire for speed and num_blocks
 	// OUTPUT LEVEL NUMBER TO LOAD MODULE
 	// VIA CURR_LEVEL WIRE
-	wire [31:0] speed_count;
+	wire [3:0] speed_count;
 	wire [3:0] prev_num_blocks;
 	wire [3:0] num_blocks;
 	wire [5:0] curr_level;

@@ -101,8 +101,8 @@ module vertical_modifier(
 			num_blocks = 4'b0001;
 			curr_level = 1;
         case (current_state)
-        LEVEL1_WAIT: begin speed_count = 50000000; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
-        LEVEL2_WAIT: begin speed_count = 25000000; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
+        LEVEL1_WAIT: begin speed_count = 1; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
+        LEVEL2_WAIT: begin speed_count = 2; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
         LEVEL3_WAIT: begin speed_count = 3; num_blocks = 4'b0001; curr_level = 3;end//
         LEVEL4_WAIT: begin speed_count = 4; num_blocks = 4'b0001; curr_level = 4;end//
         LEVEL5_WAIT: begin speed_count = 5; num_blocks = 4'b0001; curr_level = 5;end//
