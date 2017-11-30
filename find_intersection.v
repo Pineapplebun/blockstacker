@@ -32,12 +32,14 @@ module find_intersection(
 					intersect_true <= 1'b1;
                     inter_block_start <= curr_block_start;
                     inter_block_end <= prev_block_end;
+                    inter_block_size = {(inter_block_start[8:0] - inter_block_end[8:0]) / 3'd4}
                     end
                 else if (curr_block_end <= prev_block_start && curr_block_end >= prev_block_end)
                     begin
 					intersect_true <= 1'b1;
                     inter_block_start <= prev_block_start;
                     inter_block_end <= curr_block_end;
+                    inter_block_size = {(inter_block_start[8:0] - inter_block_end[8:0]) / 3'd4}
                     end
 				else
 					intersect_true <= 1'b0;
