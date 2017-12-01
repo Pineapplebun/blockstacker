@@ -1,5 +1,5 @@
-module frame_counter(enable, clk, resetn, enable_out, speed_count);
-		input enable, clk, resetn;
+module frame_counter(enable, clk, reset_frame_counter, enable_out, speed_count);
+		input enable, clk, reset_frame_counter;
 		output reg enable_out;
 		input [3:0] speed_count;
 
@@ -11,7 +11,7 @@ module frame_counter(enable, clk, resetn, enable_out, speed_count);
 
 		always @ (posedge clk)
 				begin
-						if (!resetn)
+						if (!reset_frame_counter)
 							frames <= 4'b0000;
 						else if (enable == 1'b1)
 						begin

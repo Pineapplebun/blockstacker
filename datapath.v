@@ -19,7 +19,7 @@ module datapath(
 
 		// counter for x
 		always @(posedge clk) begin
-			if (!resetn)
+			if (resetn)
 				count_x <= 2'b00;
 			else if (count_x_enable)
 				count_x <= count_x + 1'b1;
@@ -30,7 +30,7 @@ module datapath(
 
 		// counter for y
 		always @(posedge clk) begin
-			if (!resetn)
+			if (resetn)
 				count_y <= 2'b00;
 			else if (enable_y)
 				count_y <= count_y + 1'b1;

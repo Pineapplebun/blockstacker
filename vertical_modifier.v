@@ -97,9 +97,9 @@ module vertical_modifier(
     always @(*)
     begin: enable_signals
         // By default make all our signals 1
-			speed_count = 50000000;
+			speed_count = 60;
 			num_blocks = 4'b0001;
-			curr_level = 1;
+		   curr_level = 1;
         case (current_state)
         LEVEL1_WAIT: begin speed_count = 60; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
         LEVEL2_WAIT: begin speed_count = 30; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
@@ -138,7 +138,7 @@ module vertical_modifier(
     // current_state registers
     always@(posedge clk)
     begin: state_FFs
-        if(!resetn)
+        if(resetn)
             current_state <= LEVEL1_WAIT;
         else
             current_state <= next_state;

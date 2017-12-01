@@ -1,7 +1,7 @@
 module control(
 		output reg [9:0] LEDR,
 		input clk,
-		input go,
+		input start,
 		input resetn,
 		input enable_erase,
 		input done_plot,
@@ -14,7 +14,7 @@ module control(
 		output reg count_x_enable
 		);
 
-    reg [2:0] current_state, next_state;
+    reg [3:0] current_state, next_state;
 
     localparam
 				RESET = 4'd0,
@@ -24,7 +24,7 @@ module control(
 				COUNT = 4'd4,
 				ERASE = 4'd5,
 				UPDATE = 4'd6,
-				CHECK = 4'd7;
+				CHECK = 4'd7,
 				CHECK_WAIT = 4'd8;
 
 		// Next state logic aka our state table
@@ -32,28 +32,22 @@ module control(
     begin: state_table
         case (current_state)
 
-				// RESET WHEN KEY[0] HAS BEEN PRESSED
-				RESET: next_state = go ? RESET_WAIT : RESET;
-				RESET_WAIT: next_state = go ? RESET_WAIT : PLOT;
-
-				// LOOP FROM PLOT TO ERASE TO UPDATE TO PLOT
-				PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
-				RESET_COUNTER : next_state = COUNT;
-				// DELAY ERASE USING COUNT
-				// 1 erase per 2 sec on first level 
-				// -> 1 erase per 1 sec on second level
-				COUNT: next_state = (stop_true || enable_erase) ? CHECK : COUNT;
-				// STOP = 1'B1 IF A STOP BUTTON IS PRESSED
+				RESET: next_state = start ? RESET_WAIT : RESET;
+				RESET_WAIT: next_state = start ? RESET_WAIT : PLOT;
 				
-				// EVEN WHEN ENABLE_ERASE IS 1 ALREADY, IF THE PERSON
-				// HAS PRESSED STOP, THEN IT WILL NOT ERASE
-			   // IE. DO NOT SET WRITEEN TO BE 1 INSIDE CHECK	
+				PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
+				RESET_COUNTER : next_state = COUNT; 
+				
+
+				COUNT: next_state = (stop_true || enable_erase) ? CHECK : COUNT;
+
 				CHECK: next_state = stop_true ? CHECK_WAIT : ERASE;
-				CHECK_WAIT: next_state = next_level ? UPDATE : CHECK_WAIT
+				
+				CHECK_WAIT: next_state = UPDATE;
+				
 				ERASE: next_state = done_plot ? UPDATE : ERASE;
 				UPDATE: next_state = PLOT;
-
-				default: next_state = RESET;
+				//default: next_state = PLOT;
         endcase
     end // state_table
 
@@ -76,41 +70,45 @@ module control(
 						RESET:
 								begin
 								reset_counter = 1'b0;
-								reset_load = 1'b0;
+								reset_load = 1'b0; //only occurs in reset
 								LEDR[0] = 1'b1;
+								end
+						RESET_WAIT:
+								begin
+								LEDR[1] = 1'b1;
 								end
 						PLOT:
 								begin
 								count_x_enable = 1'b1;
 								writeEn = 1'b1;
-								LEDR[1] = 1'b1;
+								LEDR[2] = 1'b1;
 								end
 						RESET_COUNTER:
 								begin
 								reset_counter = 1'b0;
-								LEDR[2] = 1'b1;
+								LEDR[3] = 1'b1;
 								end
 						COUNT:
 								begin
 								enable_counter = 1'b1;
-								LEDR[3] = 1'b1;
+								LEDR[4] = 1'b1;
 								end
 						CHECK:
 								begin
-								// 
-								LEDR[4] = 1'b1;
+								enable_counter = 1'b1;
+								LEDR[5] = 1'b1;
 								end
 						CHECK_WAIT:
 								begin
-								// 
-								LEDR[5] = 1'b1;
+								enable_counter = 1'b1;
+								LEDR[6] = 1'b1;
 								end
 						ERASE:
 								begin
 								colour_erase_enable = 1'b1;
 								count_x_enable = 1'b1;
 								writeEn = 1'b1; // this plots it immediately
-								LEDR[6] = 1'b1;
+								LEDR[7] = 1'b1;
 								end
 						UPDATE:
 								begin
@@ -119,17 +117,16 @@ module control(
 								// X,Y GOING INTO DATAPATH
 								ld_x = 1'b1;
 								ld_y = 1'b1;
-								LEDR[7] = 1'b1;
+								LEDR[8] = 1'b1;
 								end
 						
-
         endcase
     end // enable_signals
 
     // current_state registers
     always@(posedge clk)
     begin: state_FFs
-        if(!resetn)
+        if(resetn)
             current_state <= RESET;
         else
             current_state <= next_state;

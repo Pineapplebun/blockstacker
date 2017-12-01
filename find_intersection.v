@@ -16,7 +16,7 @@ module find_intersection(
 		begin
 		if (stop_true)
 			begin
-			if (!resetn)
+			if (resetn)
 				intersect_true = 0;
 			else if (prev_block_start == 0 && prev_block_end == 0)
 				intersect_true = 1;

@@ -45,7 +45,7 @@ module display_block
 	// Define the number of colours as well as the initial background
 	// image file (.MIF) for the controller.
 	vga_adapter VGA(
-			.resetn(resetn),
+			.resetn(~resetn),
 			.clock(CLOCK_50),
 			.colour(colour),
 			.x(x),
@@ -70,12 +70,11 @@ module display_block
 
 	// SET RESET BUTTON
 	wire resetn;
-	assign resetn = KEY[0];
+	assign resetn = ~KEY[0];
 
 	// DECLARE X,Y WIRES
 	wire [7:0] x_load;
 	wire [6:0] y_load;
-	assign y_load = 7'd116;
 	wire ld_x, ld_y;
 
 	// DECLARE WIRES FOR DRAW/ERASE
@@ -104,19 +103,19 @@ module display_block
 				);
 
 	// STOP WIRE IS UPDATED BY MODULE CHECK_STOP_BUTTON
-	// ASSIGN STOP TO BE KEY[1] FOR NOW
+	// ASSIGN STOP TO BE KEY[2] FOR NOW
 	wire stop_true;
-	assign stop_true = KEY[2];
+	assign stop_true = ~KEY[2];
 
    // FSM CONTROL OF DRAWING
 	control c0(
 			.LEDR(LEDR[9:0]),
 			.clk(CLOCK_50),
-			.go(~KEY[1]),
+			.start(~KEY[1]),
 			.resetn(resetn),
 			.enable_erase(enable_erase),
 			.done_plot(done_plot),
-			.stop_true(stop_true),
+			.stop_true(~KEY[2]),
 			.ld_x(ld_x),
 			.ld_y(ld_y),
 			.reset_counter(reset_counter),
@@ -138,7 +137,7 @@ module display_block
 	// AND CHANGE X,Y TO BE SOMEWHERE ELSE
 	load l0(
 			.clk(enable_erase),
-			.reset(reset_load),
+			.reset_load(reset_load),
 			.colour_in(block_colour),
 			.colour_erase_enable(colour_erase_enable),
 			.ld_x(ld_x),
@@ -157,7 +156,7 @@ module display_block
 	delay_counter dc(
 			.enable(enable_counter),
 			.clk(CLOCK_50),
-			.resetn(reset_counter),
+			.reset_delay_counter(reset_counter),
 			.enable_frame(enable_frame),
 			.fps_count(fps_count)
 			);
@@ -176,7 +175,7 @@ module display_block
 	frame_counter f0(
 			.enable(enable_frame),
 			.clk(CLOCK_50),
-			.resetn(reset_counter),
+			.reset_frame_counter(reset_counter),
 			.enable_out(enable_erase),
 			.speed_count(speed_count)
 			);

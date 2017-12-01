@@ -1,7 +1,7 @@
 
 // LOADS THE NEW X,Y COORDINATES TO THE DATAPATH
-module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_true, x, y, colour);
-		input clk, reset;
+module load(clk, reset_load, colour_in, colour_erase_enable, ld_x, ld_y, x, y, colour, curr_level);
+		input clk, reset_load;
 		input [2:0] colour_in;
 		input colour_erase_enable;
 		input ld_x, ld_y;
@@ -17,9 +17,10 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_tru
 		// at the current x,y first before changing it.
 		always @ (negedge clk) // clk is enable_erase, which occurs 1 every speed_count frames
 		begin
-	      if (!reset)
+	      if (!reset_load)
 				begin
 				x <= 8'd0;
+				y <= 116;
 				horizontal <= 1'b1; // right
 	        	end
 	      else
@@ -47,7 +48,7 @@ module load(clk, reset, colour_in, colour_erase_enable, ld_x, ld_y, level_up_tru
 						end
 				end
 
-				y <= 7'd116 - 4*curr_level;
+				y <= 7'd119 - 4*curr_level;
 				
 					
 			end

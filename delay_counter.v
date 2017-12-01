@@ -1,12 +1,12 @@
-module delay_counter(enable, clk, resetn, enable_frame, fps_count);
-	  input enable, clk, resetn;
+module delay_counter(enable, clk, reset_delay_counter, enable_frame, fps_count);
+	  input enable, clk, reset_delay_counter;
       output reg enable_frame;
 	  reg [22:0] counter;
 	  input [31:0] fps_count;
 		
 	  always @(posedge clk)
 	  begin
-	       if (!resetn)
+	       if (!reset_delay_counter)
 					// 3333333 IS 15 FRAMES PER SECOND
 					// 5000000 IS 10 FRAMES PER SECOND
 					// 50000000 IS 1 FRAMES PER SECOND
