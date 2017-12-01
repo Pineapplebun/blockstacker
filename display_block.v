@@ -127,7 +127,8 @@ module display_block
 			.writeEn(writeEn),
 			.colour_erase_enable(colour_erase_enable),
 			.reset_load(reset_load),
-			.count_x_enable(count_x_enable)
+			.count_x_enable(count_x_enable),
+			.done_load(done_load)
 			);
 
 	// HARD SET THE COLOUR
@@ -149,8 +150,11 @@ module display_block
 			.curr_level(curr_level),
 			.x(x_load),
 			.y(y_load),
-			.colour(colour_load)
+			.colour(colour_load),
+			.done_load(done_load)
 			);
+
+  wire done_load;
 
 	// COUNTS HOW LONG TO WAIT BEFORE A FRAME
 	// SPEED CHANGES THIS DELAY

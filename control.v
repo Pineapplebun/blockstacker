@@ -11,7 +11,8 @@ module control(
 		output reg writeEn,
 		output reg colour_erase_enable,
 		output reg reset_load,
-		output reg count_x_enable
+		output reg count_x_enable,
+		input done_load
 		);
 
     reg [3:0] current_state, next_state;
@@ -45,15 +46,16 @@ module control(
 
 				CHECK_WAIT: next_state = !stop_true ? UPDATE : CHECK_WAIT;
 
-				ERASE: next_state = (done_plot && !enable_erase)? UPDATE : ERASE; // to make sure enable_erase has finished going back to 0
+				ERASE: next_state = done_plot ? UPDATE : ERASE;
 
-				UPDATE: next_state = PLOT;
+				UPDATE: next_state = done_load ? PLOT : UPDATE;
+
         endcase
     end // state_table
 
 
     // Output logic aka all of our datapath control signals
-    always @(*)
+    always @(*) // detect when current_state changes
     begin: enable_signals
       // By default make all our signals 0
 			ld_x = 1'b0;
