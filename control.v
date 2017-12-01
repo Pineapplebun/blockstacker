@@ -34,20 +34,20 @@ module control(
 
 				RESET: next_state = start ? RESET_WAIT : RESET;
 				RESET_WAIT: next_state = start ? RESET_WAIT : PLOT;
-				
+
 				PLOT: next_state = done_plot ? RESET_COUNTER : PLOT;
-				RESET_COUNTER : next_state = COUNT; 
-				
+				RESET_COUNTER : next_state = COUNT;
+
 
 				COUNT: next_state = (stop_true || enable_erase) ? CHECK : COUNT;
 
 				CHECK: next_state = stop_true ? CHECK_WAIT : ERASE;
-				
-				CHECK_WAIT: next_state = UPDATE;
-				
-				ERASE: next_state = done_plot ? UPDATE : ERASE;
+
+				CHECK_WAIT: next_state = !stop_true ? UPDATE : CHECK_WAIT;
+
+				ERASE: next_state = (done_plot && !enable_erase)? UPDATE : ERASE; // to make sure enable_erase has finished going back to 0
+
 				UPDATE: next_state = PLOT;
-				//default: next_state = PLOT;
         endcase
     end // state_table
 
@@ -55,7 +55,7 @@ module control(
     // Output logic aka all of our datapath control signals
     always @(*)
     begin: enable_signals
-        // By default make all our signals 0
+      // By default make all our signals 0
 			ld_x = 1'b0;
 			ld_y = 1'b0;
 			writeEn = 1'b0;
@@ -95,12 +95,10 @@ module control(
 								end
 						CHECK:
 								begin
-								enable_counter = 1'b1;
 								LEDR[5] = 1'b1;
 								end
 						CHECK_WAIT:
 								begin
-								enable_counter = 1'b1;
 								LEDR[6] = 1'b1;
 								end
 						ERASE:
@@ -119,7 +117,7 @@ module control(
 								ld_y = 1'b1;
 								LEDR[8] = 1'b1;
 								end
-						
+
         endcase
     end // enable_signals
 

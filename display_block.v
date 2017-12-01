@@ -72,6 +72,14 @@ module display_block
 	wire resetn;
 	assign resetn = ~KEY[0];
 
+	// SET START BUTTON
+	wire start;
+	assign start = ~KEY[1];
+
+	// STOP_TRUE
+	wire stop_true;
+	assign stop_true = ~KEY[2];
+
 	// DECLARE X,Y WIRES
 	wire [7:0] x_load;
 	wire [6:0] y_load;
@@ -102,20 +110,16 @@ module display_block
 				.out_block_end(curr_block_end)
 				);
 
-	// STOP WIRE IS UPDATED BY MODULE CHECK_STOP_BUTTON
-	// ASSIGN STOP TO BE KEY[2] FOR NOW
-	wire stop_true;
-	assign stop_true = ~KEY[2];
 
    // FSM CONTROL OF DRAWING
 	control c0(
 			.LEDR(LEDR[9:0]),
 			.clk(CLOCK_50),
-			.start(~KEY[1]),
+			.start(start),
 			.resetn(resetn),
 			.enable_erase(enable_erase),
 			.done_plot(done_plot),
-			.stop_true(~KEY[2]),
+			.stop_true(stop_true),
 			.ld_x(ld_x),
 			.ld_y(ld_y),
 			.reset_counter(reset_counter),
@@ -152,7 +156,7 @@ module display_block
 	// SPEED CHANGES THIS DELAY
 	// ENABLE_FRAME IS OUTPUT 60 TIMES PER SECOND
 	// SO THAT WE HAVE 60 FPS
-	wire [31:0] fps_count = 833332; 
+	wire [31:0] fps_count = 833332;
 	delay_counter dc(
 			.enable(enable_counter),
 			.clk(CLOCK_50),
@@ -163,12 +167,12 @@ module display_block
 
 	// COUNTS HOW MANY FRAMES BEFORE ERASING
 	// ENABLE_ERASE IS OUTPUT 60/SPEED_COUNT TIMES PER SECOND
-	// 
+	//
 	// LEVEL 1
 	// WE NEED 1 ERASE/60 FRAMES : 60 FRAMES TO DRAW
 	// A WHITE BOX, 1 FRAME TO ERASE A WHITE BOX
 	// SET SPEED_COUNT = 60
-	// 
+	//
 	// LEVEL 2
 	// 1 ERASE / 30 FRAMES
 	// SET SPEED_COUNT = 30
@@ -183,13 +187,11 @@ module display_block
 	// wire for speed and num_blocks
 	// OUTPUT LEVEL NUMBER TO LOAD MODULE
 	// VIA CURR_LEVEL WIRE
-	wire [3:0] speed_count;
-	wire [3:0] prev_num_blocks;
-	wire [3:0] num_blocks;
+	wire [10:0] speed_count;
 	wire [5:0] curr_level;
 	vertical_modifier v0(
 			.clk(CLOCK_50),
-			.go(~KEY[2]),
+			.go(stop_true),
 			.resetn(resetn),
 			.next_signal(level_up_true),
 			.speed_count(speed_count),
@@ -198,6 +200,7 @@ module display_block
 			);
 
 	// UPDATES THE PREV BLOCK WHEN STOP IS PRESSED
+
 	block_tracker bt(
 			.clk(CLOCK_50),
 			.resetn(resetn),
@@ -211,8 +214,10 @@ module display_block
 			.intersect_true(level_up_true)
 			);
 
+	wire [3:0] prev_num_blocks;
 	wire [8:0] prev_block_start;
 	wire [8:0] prev_block_end;
+	wire [3:0] num_blocks;
 	wire [8:0] curr_block_start;
 	wire [8:0] curr_block_end;
 	wire level_up_true;

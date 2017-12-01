@@ -18,9 +18,9 @@ log {/*}
 add wave {/*}
 
 # Apply reset
-force {reset} 0 0, 1 2 -r 200
+force {reset_load} 0 0, 1 2 -r 200
 
-###### 
+######
 # Apply clk
 force {clk} 0 0, 1 1 -r 2
 force {colour_erase_enable} 0 0, 1 3 -r 4
@@ -30,9 +30,8 @@ force {colour_in[2:0]} 111 0
 force {ld_x} 1 0
 force {ld_y} 1 0
 
-force {level_up_true} 0 0
+force {curr_level} 1 0
 
 
 # Run simulation for a few ns.
 run 200ns
-

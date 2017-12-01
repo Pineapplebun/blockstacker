@@ -3,9 +3,9 @@ module vertical_modifier(
 	 input go,
     input resetn,
     input next_signal,
-	 output reg speed_count,
-	 output reg num_blocks,
-	 output reg curr_level
+	 output reg [10:0] speed_count,
+	 output reg [3:0] num_blocks,
+	 output reg [5:0] curr_level
     );
 
     reg [4:0] current_state, next_state;
@@ -45,48 +45,48 @@ module vertical_modifier(
     always@(*)
     begin: level_table
         case (current_state)
-		  LEVEL1_WAIT: next_state = go ? LEVEL1 : LEVEL1_WAIT; 
+		  LEVEL1_WAIT: next_state = go ? LEVEL1 : LEVEL1_WAIT;
         LEVEL1: next_state = next_signal ? LEVEL2_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL2_WAIT: next_state = go ? LEVEL2 : LEVEL2_WAIT;
         LEVEL2: next_state = next_signal ? LEVEL3_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL3_WAIT: next_state = go ? LEVEL4 : LEVEL3_WAIT;
         LEVEL3: next_state = next_signal ? LEVEL4_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL4_WAIT: next_state = go ? LEVEL5 : LEVEL4_WAIT;
         LEVEL4: next_state = next_signal ? LEVEL5_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL5_WAIT: next_state = go ? LEVEL6 : LEVEL5_WAIT;
         LEVEL5: next_state = next_signal ? LEVEL6_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL6_WAIT: next_state = go ? LEVEL6 : LEVEL6_WAIT;
         LEVEL6: next_state = next_signal ? LEVEL7_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL7_WAIT: next_state = go ? LEVEL7 : LEVEL7_WAIT;
         LEVEL7: next_state = next_signal ? LEVEL8_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL8_WAIT: next_state = go ? LEVEL8 : LEVEL8_WAIT;
         LEVEL8: next_state = next_signal ? LEVEL9_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL9_WAIT: next_state = go ? LEVEL9 : LEVEL9_WAIT;
         LEVEL9: next_state = next_signal ? LEVEL10_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL10_WAIT: next_state = go ? LEVEL10 : LEVEL10_WAIT;
         LEVEL10: next_state = next_signal ? LEVEL11_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL11_WAIT: next_state = go ? LEVEL11 : LEVEL11_WAIT;
         LEVEL11: next_state = next_signal ? LEVEL12_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL12_WAIT: next_state = go ? LEVEL12 : LEVEL12_WAIT;
         LEVEL12: next_state = next_signal ? LEVEL13_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL13_WAIT: next_state = go ? LEVEL13 : LEVEL13_WAIT;
         LEVEL13: next_state = next_signal ? LEVEL14_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL14_WAIT: next_state = go ? LEVEL14 : LEVEL14_WAIT;
         LEVEL14: next_state = next_signal ? LEVEL15_WAIT : LEVEL1_WAIT;
-		  
+
 		  LEVEL15_WAIT: next_state = go ? LEVEL15 : LEVEL15_WAIT;
         LEVEL15: next_state = LEVEL1_WAIT;//level15 is the max level. after that the game restarts
         default: next_state = LEVEL1_WAIT;
@@ -116,7 +116,7 @@ module vertical_modifier(
         LEVEL13_WAIT: begin speed_count = 13; num_blocks = 4'b0001; curr_level = 13;end//
         LEVEL14_WAIT: begin speed_count = 14; num_blocks = 4'b0001; curr_level = 14;end//
         LEVEL15_WAIT: begin speed_count = 15; num_blocks = 4'b0001; curr_level = 15;end//
-		  
+
 		  LEVEL1: begin speed_count = 60; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
         LEVEL2: begin speed_count = 30; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
         LEVEL3 : begin speed_count = 3; num_blocks = 4'b0001; curr_level = 3;end//

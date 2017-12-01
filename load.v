@@ -11,20 +11,21 @@ module load(clk, reset_load, colour_in, colour_erase_enable, ld_x, ld_y, x, y, c
 
 		reg horizontal;
 		input [5:0] curr_level;
-		
-		
+
+
 		// We want to change the x,y at the negedge because we want the black box to be drawn
 		// at the current x,y first before changing it.
 		always @ (negedge clk) // clk is enable_erase, which occurs 1 every speed_count frames
 		begin
 	      if (!reset_load)
+
 				begin
 				x <= 8'd0;
 				y <= 116;
 				horizontal <= 1'b1; // right
 	        	end
+
 	      else
-				// NOTE THAT LD_X AND LD_Y IS NOT ON WHEN WE ARE IN THE ERASE STATE
 				begin
 				if (horizontal)
 						begin
@@ -48,19 +49,17 @@ module load(clk, reset_load, colour_in, colour_erase_enable, ld_x, ld_y, x, y, c
 						end
 				end
 
-				y <= 7'd119 - 4*curr_level;
-				
-					
+				y <= 7'd120 - 4*curr_level;
 			end
-		
+
 		// ONLY NEED TO CHANGE COLOUR SINCE X,Y ALREADY IN RIGHT SPOT
 		// WHEN COLOUR_ERASE_ENABLE IS ON AT THE POSEDGE OF ENABLE_ERASE
-		always @(*) 
+		always @(*)
 		begin
-				if (colour_erase_enable) // need to add ~stop_true this so that it doesn't erase the current position
+				if (colour_erase_enable)
 					colour <= 3'b000;
 				else
 					colour <= colour_in;
 		end
-		
+
 endmodule
