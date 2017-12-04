@@ -27,10 +27,13 @@ force {colour_erase_enable} 0 0, 1 3 -r 4
 
 force {colour_in[2:0]} 111 0
 
-force {ld_x} 1 0
-force {ld_y} 1 0
+force {ld_x} 0 0, 1 20 -r 40
+force {ld_y} 0 0, 1 20 -r 40
 
-force {curr_level} 1 0
+force {curr_level[5:0]} 10#1 0
+force {curr_level[5:0]} 10#2 40
+force {curr_level[5:0]} 10#3 80
+force {curr_level[5:0]} 10#4 120 
 
 
 # Run simulation for a few ns.
