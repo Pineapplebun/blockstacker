@@ -18,21 +18,21 @@ log {/*}
 add wave {/*}
 
 # Apply reset
-force {resetn} 0 0, 1 2 -r 200
+force {resetn} 1 0, 0 2 -r 300
 
 ###### 
 # Apply clk
 force {clk} 0 0, 1 1 -r 2
 force {stop_true} 0 0, 1 3 -r 4
 
-force {prev_block_start} 00011100 0, 00100100 100
-force {prev_block_end} 00100100 0, 00110100 100
+force {prev_block_start} 00011100 0, 00100100 50
+force {prev_block_end} 00100100 0, 00110100 50
 force {prev_block_size} 010 0
 
-force {curr_block_start} 00011100 0
-force {curr_block_end} 00100100 0
+force {curr_block_start} 00011100 0, 10#48 100
+force {curr_block_end} 00100100 0, 10#56 100
 force {curr_block_size} 010 0
 
 # Run simulation for a few ns.
-run 200ns
+run 300ns
 
