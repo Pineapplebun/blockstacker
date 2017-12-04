@@ -7,10 +7,10 @@ vlib testfind
 # (used when no unit is specified), while the second number
 # defines precision (all times are rounded to this value)
 
-vlog -timescale 1ns/1ns find_intersection.v
+vlog -timescale 1ns/1ns control.v
 
 # Load simulation using alureg as the top level simulation module.
-vsim find_intersection
+vsim control
 
 # Log all signals and add some signals to waveform window.
 log {/*}
