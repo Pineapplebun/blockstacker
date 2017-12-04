@@ -18,7 +18,7 @@ log {/*}
 add wave {/*}
 
 # Apply reset
-force {resetn} 1 0, 1 2
+force {resetn} 1 0, 0 2
 
 # Apply clk
 force {clk} 0 0, 1 1 -r 2
