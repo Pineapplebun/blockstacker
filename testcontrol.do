@@ -1,5 +1,5 @@
 # Set the working dir, where all compiled Verilog goes.
-vlib testfind
+vlib testcontrol
 
 # Compile all Verilog modules in mux.v to working dir;
 # could also have multiple Verilog files.
@@ -23,7 +23,7 @@ force {resetn} 1 0, 0 2
 # Apply clk
 force {clk} 0 0, 1 1 -r 2
 force {stop_true} 0 0
-force {start} 0 0, 1 5, 0 5
+force {start} 0 0, 1 5, 0 10
 force {enable_erase} 0 0, 1 30
 force {stop_true} 0 0, 1 15, 0 20
 force {done_load} 0 0, 1 25
