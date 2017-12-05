@@ -164,7 +164,22 @@ module vertical_modifier(
         LEVEL14 : begin speed_count = 11'd60; num_blocks = 4'b0001; curr_level = 6'd14;end//
         LEVEL15 : begin speed_count = 11'd60; num_blocks = 4'b0001; curr_level = 6'd15;end//
         
-           
+        LEVEL1a: begin speed_count = 11'd60; num_blocks = 4'b0001; curr_level = 1;end// 1 FRAME PER SECOND
+        LEVEL2a: begin speed_count = 11'd30; num_blocks = 4'b0001; curr_level = 2;end// 2 FRAME PER SECOND
+        LEVEL3a : begin speed_count = 11'd3; num_blocks = 4'b0001; curr_level = 3;end//
+        LEVEL4a : begin speed_count = 11'd4; num_blocks = 4'b0001; curr_level = 4;end//
+        LEVEL5a : begin speed_count = 11'd5; num_blocks = 4'b0001; curr_level = 5;end//
+        LEVEL6a : begin speed_count = 11'd6; num_blocks = 4'b0001; curr_level = 6;end//
+        LEVEL7a : begin speed_count = 11'd7; num_blocks = 4'b0001; curr_level = 7;end//
+        LEVEL8a : begin speed_count = 11'd8; num_blocks = 4'b0001; curr_level = 8;end//
+        LEVEL9a : begin speed_count = 11'd9; num_blocks = 4'b0001; curr_level = 9;end//
+        LEVEL10a : begin speed_count = 11'd10; num_blocks = 4'b0001; curr_level = 10;end//
+        LEVEL11a : begin speed_count = 11'd11; num_blocks = 4'b0001; curr_level = 11;end//
+        LEVEL12a : begin speed_count = 11'd12; num_blocks = 4'b0001; curr_level = 12;end//
+        LEVEL13a : begin speed_count = 11'd13; num_blocks = 4'b0001; curr_level = 13;end//
+        LEVEL14a : begin speed_count = 11'd14; num_blocks = 4'b0001; curr_level = 14;end//
+        LEVEL15a : begin speed_count = 11'd15; num_blocks = 4'b0001; curr_level = 15;end//
+        endcase        
         endcase
     end // enable_signals
 
