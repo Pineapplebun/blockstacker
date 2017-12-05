@@ -19,7 +19,7 @@ module load(clk, reset_load, colour_in, colour_erase_enable, ld_x, ld_y, x, y, c
 
 				begin
 				x = 8'd0;
-				y = 116;
+				y = 7'd116;
 				horizontal = 1'b1; // right
 				done_load = 0;
 	        	end

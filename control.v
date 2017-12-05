@@ -41,7 +41,7 @@ module control(
 
 
 				COUNT: next_state = (stop_true || enable_erase) ? CHECK : COUNT;
-
+				
 				CHECK: next_state = stop_true ? CHECK_WAIT : ERASE;
 
 				CHECK_WAIT: next_state = !stop_true ? UPDATE : CHECK_WAIT;

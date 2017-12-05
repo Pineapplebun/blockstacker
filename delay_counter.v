@@ -2,7 +2,7 @@ module delay_counter(enable, clk, reset_delay_counter, enable_frame, fps_count);
 	  input enable, clk, reset_delay_counter;
       output reg enable_frame;
 	  reg [22:0] counter;
-	  input [31:0] fps_count;
+	  input [22:0] fps_count;
 		
 	  always @(posedge clk)
 	  begin
@@ -15,7 +15,7 @@ module delay_counter(enable, clk, reset_delay_counter, enable_frame, fps_count);
 			  begin
 					if (counter == 22'd0)
 						begin
-						counter <= fps_count;//833332;
+						counter <= fps_count[22:0];//833332;
 						enable_frame <= 1;
 						end
 					else
