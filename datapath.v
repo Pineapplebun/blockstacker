@@ -9,8 +9,8 @@ module datapath(
 		output [6:0] y_out,
 		output [2:0] colour_out,
 		output reg done_plot,
-		output reg out_block_start,
-		output reg out_block_end
+		output reg [8:0] out_block_start,
+		output reg [8:0] out_block_end
 		);
 
 		reg [1:0] count_x, count_y;
@@ -43,8 +43,8 @@ module datapath(
 		if (count_x == 2'b11 && count_y == 2'b11)
 			begin
 			done_plot = 1'b1;
-			out_block_start <= x;
-			out_block_end <= x_out;
+			out_block_start[7:0] = x;
+			out_block_end[7:0] = x_out;
 			end
 		else
 			done_plot = 1'b0;

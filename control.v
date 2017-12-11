@@ -12,7 +12,10 @@ module control(
 		output reg colour_erase_enable,
 		output reg reset_load,
 		output reg count_x_enable,
-		input done_load
+		input done_load,
+		output reg reset_done_load,
+		output reg reset_intersect_true,
+		output reg reset_done_tracking
 		);
 
     reg [3:0] current_state, next_state;
@@ -67,6 +70,9 @@ module control(
 			colour_erase_enable = 1'b0;
 			count_x_enable = 1'b0;
 			LEDR[9:0] = 10'd0;
+			reset_done_load = 0;
+			reset_intersect_true = 0;
+			reset_done_tracking = 0;
 
         case (current_state)
 						RESET:
@@ -84,6 +90,8 @@ module control(
 								count_x_enable = 1'b1;
 								writeEn = 1'b1;
 								LEDR[2] = 1'b1;
+								reset_intersect_true = 1;
+								reset_done_tracking = 1;
 								end
 						RESET_COUNTER:
 								begin
@@ -97,6 +105,7 @@ module control(
 								end
 						CHECK:
 								begin
+								reset_done_load = 1;
 								LEDR[5] = 1'b1;
 								end
 						CHECK_WAIT:
@@ -115,6 +124,7 @@ module control(
 								// SET LD_X, LD_Y SO THAT WE START
 								// THE LOAD MODULE WHICH UPDATES THE
 								// X,Y GOING INTO DATAPATH
+								
 								ld_x = 1'b1;
 								ld_y = 1'b1;
 								LEDR[8] = 1'b1;

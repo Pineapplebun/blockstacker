@@ -8,28 +8,45 @@ module find_intersection(
 		input [8:0] curr_block_end,
 		input [3:0] prev_block_size,
 		input [3:0] curr_block_size,
-		output reg intersect_true
+		output reg intersect_true,
+		input reset_intersect_true,
+		output reg done_finding
 		);
 
 		always @(*)
 		// defaults
 		begin
-		if (stop_true)
-			begin
-			if (resetn)
+		if (resetn)
+				begin
 				intersect_true = 0;
-			else if (prev_block_start == 0 && prev_block_end == 0)
+				done_finding = 0;
+				end
+		else if (reset_intersect_true)
+				begin
+				intersect_true = 0;
+				done_finding = 0;
+				end
+		else if (stop_true)
+			begin
+			if (prev_block_start == 0 && prev_block_end == 0)
+				begin
 				intersect_true = 1;
+				done_finding = 1;
+				end
 			else
 				begin
-				if (curr_block_start >= prev_block_start && curr_block_start <= prev_block_end)
+				if (curr_block_start == prev_block_start && curr_block_end == prev_block_end)
+					begin
 					intersect_true = 1;
+					done_finding = 1;
+					end
 				else
+					begin
 					intersect_true = 0;
+					done_finding = 1;
+					end
 				end
 			end
-		else
-			intersect_true = 0;
 		end
 		
 
